@@ -19,7 +19,7 @@ const features = [
     description:
       "Explore upcoming social development events, from tree plantations to donation drives and community cleanups.",
     color: "bg-green-100 text-green-700",
-    href: "/Upcomingevents",
+    href: "/events",
   },
   {
     icon: PlusCircle,
@@ -35,7 +35,7 @@ const features = [
     description:
       "Connect with people who share your passion. Join meaningful initiatives and contribute your time and skills.",
     color: "bg-blue-100 text-blue-700",
-    href: "/Upcomingevents",
+    href: "/events",
   },
   {
     icon: HeartHandshake,
@@ -43,7 +43,7 @@ const features = [
     description:
       "Bring people together, encourage collaboration, and create lasting positive changes in your local community.",
     color: "bg-purple-100 text-purple-700",
-    href: "/Upcomingevents",
+    href: "/events",
   },
   {
     icon: MapPin,
@@ -51,7 +51,7 @@ const features = [
     description:
       "Find meaningful activities and volunteering opportunities happening around your community.",
     color: "bg-rose-100 text-rose-700",
-    href: "/Upcomingevents",
+    href: "/events",
   },
   {
     icon: ShieldCheck,
@@ -59,7 +59,7 @@ const features = [
     description:
       "Enjoy a simple and secure experience with user authentication and convenient event participation.",
     color: "bg-emerald-100 text-emerald-700",
-    href: "/Upcomingevents",
+    href: "/events",
   },
 ];
 
@@ -145,7 +145,7 @@ const OurFeaturesPage = () => {
 
             <div className="mt-7 flex flex-wrap justify-center gap-4">
               <Link
-                href="/Upcomingevents"
+                href="/events"
                 className="group inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-bold text-green-800 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-lg">
                 Find Events
                 <ArrowRight

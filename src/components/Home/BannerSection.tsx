@@ -17,28 +17,28 @@ const statistics = [
     label: "Active Volunteers",
     value: "2,500+",
     icon: Users,
-    href: "/Upcomingevents",
+    href: "/events",
     description: "Join our volunteer community",
   },
   {
     label: "Events Completed",
     value: "180+",
     icon: CalendarCheck,
-    href: "/Upcomingevents",
+    href: "/events",
     description: "Explore community events",
   },
   {
     label: "Lives Impacted",
     value: "12K+",
     icon: Heart,
-    href: "/Upcomingevents",
+    href: "/events",
     description: "Discover our community initiatives",
   },
   {
     label: "Community Driven",
     value: "100%",
     icon: HandHeart,
-    href: "/Upcomingevents",
+    href: "/events",
     description: "Be part of the change",
   },
 ];
@@ -76,7 +76,7 @@ const BannerSection = () => {
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/Upcomingevents"
+                href="/events"
                 className="group inline-flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3.5 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl active:scale-95">
                 Explore Upcoming Events
                 <ArrowRight
@@ -86,7 +86,7 @@ const BannerSection = () => {
               </Link>
 
               <Link
-                href="/events/create"
+                href="/create-events"
                 className="group inline-flex items-center gap-2 rounded-lg border border-green-700 px-6 py-3.5 font-semibold text-green-800 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-lg active:scale-95">
                 <PlusCircle
                   size={18}

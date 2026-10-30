@@ -29,7 +29,7 @@ const PastEvents = () => {
           </div>
 
           <Link
-            href="/Upcomingevents"
+            href="/events"
             className="group inline-flex shrink-0 items-center gap-2 font-bold text-green-700 transition hover:text-green-900">
             Explore More Events
             <ArrowRight
