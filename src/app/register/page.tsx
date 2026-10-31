@@ -1,6 +1,6 @@
-
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import {
   ArrowRight,
@@ -33,11 +33,15 @@ const Register = () => {
 
   const passwordValid = hasUppercase && hasLowercase && hasMinLength;
 
+  const [socialLoading, setSocialLoading] = useState<
+    "google" | "github" | null
+  >(null);
+
   // Email registration
   const handleEmailSignUp = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting || socialLoading) return;
 
     const formData = new FormData(e.currentTarget);
 
@@ -68,21 +72,12 @@ const Register = () => {
         image: image || undefined,
       });
 
-      console.log("Signup response:", data);
-      console.log("Signup error:", {
-        message: error?.message,
-        status: error?.status,
-        statusText: error?.statusText,
-        details: error,
-      });
-
       if (error) {
         toast.error(error.message || "Registration failed.");
         return;
       }
 
       if (data) {
-        console.log(data);
         toast.success("Account created successfully!");
         router.push("/");
       }
@@ -91,6 +86,34 @@ const Register = () => {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Social registration
+  const handleSocialSignUp = async (provider: "google" | "github") => {
+    if (isSubmitting || socialLoading) return;
+
+    setSocialLoading(provider);
+
+    try {
+      const { data, error } = await authClient.signIn.social({
+        provider,
+        callbackURL: "/",
+        errorCallbackURL: "/signup",
+      });
+
+      if (error) {
+        console.error(`${provider} OAuth error:`, error);
+        toast.error(error.message || `Unable to sign up with ${provider}.`);
+        setSocialLoading(null);
+        return;
+      }
+
+      console.log(`${provider} OAuth response:`, data);
+    } catch (err) {
+      console.error(`${provider} sign-up failed:`, err);
+      toast.error(`Unable to sign up with ${provider}. Please try again.`);
+      setSocialLoading(null);
     }
   };
 
@@ -162,7 +185,9 @@ const Register = () => {
 
                 <h1 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
                   Together
-                  <span className="text-green-600 dark:text-green-400">WeCan</span>
+                  <span className="text-green-600 dark:text-green-400">
+                    WeCan
+                  </span>
                 </h1>
               </Link>
             </div>
@@ -187,14 +212,12 @@ const Register = () => {
               onSubmit={handleEmailSignUp}
               className="space-y-4"
               autoComplete="off"
-              data-lpignore="true"
-            >
+              data-lpignore="true">
               {/* Full Name */}
               <div>
                 <label
                   htmlFor="name"
-                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
-                >
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Full Name
                 </label>
 
@@ -221,8 +244,7 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
-                >
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Email Address
                 </label>
 
@@ -252,8 +274,7 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="imageUrl"
-                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
-                >
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Profile Image URL
                 </label>
 
@@ -279,8 +300,7 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
-                >
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Password
                 </label>
 
@@ -309,8 +329,7 @@ const Register = () => {
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-teal-700 dark:hover:text-teal-400"
-                  >
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-teal-700 dark:hover:text-teal-400">
                     {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
                   </button>
                 </div>
@@ -323,7 +342,10 @@ const Register = () => {
 
                   <div className="flex items-center gap-2">
                     {hasMinLength ? (
-                      <Check size={15} className="text-emerald-600 dark:text-emerald-400" />
+                      <Check
+                        size={15}
+                        className="text-emerald-600 dark:text-emerald-400"
+                      />
                     ) : (
                       <X size={15} className="text-gray-400" />
                     )}
@@ -333,15 +355,17 @@ const Register = () => {
                         hasMinLength
                           ? "text-emerald-700 dark:text-emerald-400"
                           : "text-gray-500 dark:text-gray-400"
-                      }`}
-                    >
+                      }`}>
                       At least 6 characters
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {hasUppercase ? (
-                      <Check size={15} className="text-emerald-600 dark:text-emerald-400" />
+                      <Check
+                        size={15}
+                        className="text-emerald-600 dark:text-emerald-400"
+                      />
                     ) : (
                       <X size={15} className="text-gray-400" />
                     )}
@@ -351,15 +375,17 @@ const Register = () => {
                         hasUppercase
                           ? "text-emerald-700 dark:text-emerald-400"
                           : "text-gray-500 dark:text-gray-400"
-                      }`}
-                    >
+                      }`}>
                       At least one uppercase letter (A-Z)
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {hasLowercase ? (
-                      <Check size={15} className="text-emerald-600 dark:text-emerald-400" />
+                      <Check
+                        size={15}
+                        className="text-emerald-600 dark:text-emerald-400"
+                      />
                     ) : (
                       <X size={15} className="text-gray-400" />
                     )}
@@ -369,8 +395,7 @@ const Register = () => {
                         hasLowercase
                           ? "text-emerald-700 dark:text-emerald-400"
                           : "text-gray-500 dark:text-gray-400"
-                      }`}
-                    >
+                      }`}>
                       At least one lowercase letter (a-z)
                     </span>
                   </div>
@@ -380,9 +405,8 @@ const Register = () => {
               {/* Register Button */}
               <button
                 type="submit"
-                disabled={!passwordValid || isSubmitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500"
-              >
+                disabled={!passwordValid || isSubmitting || !!socialLoading}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500">
                 {isSubmitting ? "Creating Account..." : "Create Account"}
 
                 {!isSubmitting && <ArrowRight size={18} />}
@@ -401,32 +425,41 @@ const Register = () => {
             </div>
 
             {/* Social Registration Buttons */}
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button
                 type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-600 dark:hover:bg-gray-700"
-              >
+                onClick={() => handleSocialSignUp("google")}
+                disabled={!!socialLoading || isSubmitting}
+                className="group flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:bg-teal-50 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-500 dark:hover:bg-gray-700">
                 <Image
                   src="/assets/google.png"
-                  alt="Google logo"
-                  height={20}
-                  width={20}
+                  alt="Google"
+                  width={19}
+                  height={19}
+                  className="shrink-0 object-contain"
                 />
-                Register with Google
-              </button>
+                <span>
+                  {socialLoading === "google" ? "Connecting..." : "Register with Google"}
+                </span>
+              </Button>
 
-              <button
+              <Button
                 type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-600 dark:hover:bg-gray-700"
-              >
+                onClick={() => handleSocialSignUp("github")}
+                disabled={!!socialLoading || isSubmitting}
+                className="group flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:bg-teal-50 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-500 dark:hover:bg-gray-700">
                 <Image
                   src="/assets/github.png"
-                  alt="GitHub logo"
-                  height={20}
-                  width={20}
+                  alt="GitHub"
+                  width={19}
+                  height={19}
+                  className="shrink-0 object-contain dark:invert"
                 />
-                Register with GitHub
-              </button>
+                <span>
+                  {socialLoading === "github" ? "Connecting..." : "Register with GitHub"}
+                </span>
+              </Button>
             </div>
 
             {/* Login Link */}
@@ -434,8 +467,7 @@ const Register = () => {
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="font-bold text-teal-700 transition hover:text-teal-900 hover:underline dark:text-teal-400 dark:hover:text-teal-300"
-              >
+                className="font-bold text-teal-700 transition hover:text-teal-900 hover:underline dark:text-teal-400 dark:hover:text-teal-300">
                 Login Here
               </Link>
             </p>

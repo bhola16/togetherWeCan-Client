@@ -1,11 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const Login = () => {
@@ -14,8 +15,12 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [socialLoading, setSocialLoading] = useState<
+    "google" | "github" | null
+  >(null);
+
   // Email Login
-  const handleEmailLogin = async (e: FormEvent<HTMLFormElement>) => {
+  const handleEmailLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (isSubmitting) return;
@@ -56,29 +61,26 @@ const Login = () => {
     }
   };
 
-  // Google Login
-  const handleGoogleLogin = async () => {
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "/",
-      });
-    } catch (error) {
-      console.error("Google login error:", error);
-      toast.error("Google login failed. Please try again.");
-    }
-  };
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    if (isSubmitting || socialLoading) return;
 
-  // GitHub Login
-  const handleGithubLogin = async () => {
+    setSocialLoading(provider);
+
     try {
-      await authClient.signIn.social({
-        provider: "github",
+      const { error } = await authClient.signIn.social({
+        provider,
         callbackURL: "/",
+        errorCallbackURL: "/login",
       });
-    } catch (error) {
-      console.error("GitHub login error:", error);
-      toast.error("GitHub login failed. Please try again.");
+
+      if (error) {
+        toast.error(error.message || `Unable to log in with ${provider}.`);
+        setSocialLoading(null);
+      }
+    } catch (err) {
+      // console.error(`${provider} login failed:`, err);
+      toast.error(`Unable to log in with ${provider}. Please try again.`);
+      setSocialLoading(null);
     }
   };
 
@@ -277,32 +279,40 @@ const Login = () => {
             </div>
 
             {/* Social Login Buttons */}
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button
                 type="button"
-                onClick={handleGoogleLogin}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-700 dark:hover:bg-gray-700">
+                onClick={() => handleSocialLogin("google")}
+                disabled={!!socialLoading || isSubmitting}
+                className="group flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:bg-teal-50 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-500 dark:hover:bg-gray-700">
                 <Image
                   src="/assets/google.png"
-                  alt="Google logo"
-                  height={20}
-                  width={20}
+                  alt="Google"
+                  width={19}
+                  height={19}
+                  className="shrink-0 object-contain"
                 />
-                Login with Google
-              </button>
+                <span>
+                  {socialLoading === "google" ? "Connecting..." : "Login with Google"}
+                </span>
+              </Button>
 
-              <button
+              <Button
                 type="button"
-                onClick={handleGithubLogin}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-700 dark:hover:bg-gray-700">
+                onClick={() => handleSocialLogin("github")}
+                disabled={!!socialLoading || isSubmitting}
+                className="group flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:bg-teal-50 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-500 dark:hover:bg-gray-700">
                 <Image
                   src="/assets/github.png"
-                  alt="GitHub logo"
-                  height={20}
-                  width={20}
+                  alt="GitHub"
+                  width={19}
+                  height={19}
+                  className="shrink-0 object-contain dark:invert"
                 />
-                Login with GitHub
-              </button>
+                <span>
+                  {socialLoading === "github" ? "Connecting..." : "Login with GitHub"}
+                </span>
+              </Button>
             </div>
 
             {/* Register Link */}
