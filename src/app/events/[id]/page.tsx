@@ -427,24 +427,27 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
             {/* Explore Events */}
 
             {/* Explore Events */}
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-100 via-teal-50 to-teal-100 p-6 text-gray-900 shadow-md transition-colors duration-300 dark:from-emerald-600 dark:via-teal-700 dark:to-teal-900 dark:text-white">
-              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full border-[18px] border-teal-700/10 dark:border-white/10" />
+
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-100 via-teal-50 to-teal-100 p-6 text-gray-900 shadow-md transition-all duration-300 dark:from-gray-900 dark:via-teal-950 dark:to-emerald-950 dark:text-white">
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full border-[18px] border-teal-700/10 dark:border-teal-300/10" />
 
               <div className="relative">
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:bg-white/15 dark:text-white">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300">
                   <Sparkles size={22} />
                 </div>
 
-                <h2 className="text-xl font-extrabold">Discover More Events</h2>
+                <h2 className="text-xl font-extrabold text-gray-900 dark:text-white">
+                  Discover More Events
+                </h2>
 
-                <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-teal-50">
+                <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-300">
                   Explore other activities and find more opportunities to
                   connect with your community.
                 </p>
 
                 <Link
                   href="/events"
-                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 dark:bg-white dark:text-teal-800 dark:hover:bg-emerald-50">
+                  className="mt-6 ml-auto flex w-fit items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 dark:bg-emerald-500 dark:text-gray-950 dark:hover:bg-emerald-400">
                   Explore Events
                   <ExternalLink size={16} />
                 </Link>
