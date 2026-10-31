@@ -1,12 +1,86 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 
 const Login = () => {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Email Login
+  const handleEmailLogin = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+
+    const formData = new FormData(e.currentTarget);
+
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+
+    if (!email || !password) {
+      toast.error("Please enter your email and password.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast.error(error.message || "Login failed. Please try again.");
+        return;
+      }
+
+      if (data) {
+        toast.success("Logged in successfully!");
+        router.push("/");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Google Login
+  const handleGoogleLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Google login failed. Please try again.");
+    }
+  };
+
+  // GitHub Login
+  const handleGithubLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "github",
+        callbackURL: "/",
+      });
+    } catch (error) {
+      console.error("GitHub login error:", error);
+      toast.error("GitHub login failed. Please try again.");
+    }
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
@@ -18,7 +92,7 @@ const Login = () => {
 
           {/* Desktop Logo */}
           <div className="relative z-10">
-            <Link href="/" className="inline-flex items-center gap-3 group">
+            <Link href="/" className="group inline-flex items-center gap-3">
               <Image
                 src="/assets/TogetherWeCan.png"
                 alt="TogetherWeCan Logo"
@@ -64,7 +138,7 @@ const Login = () => {
           <div className="w-full max-w-md">
             {/* Mobile Logo */}
             <div className="mb-8 flex justify-center lg:hidden">
-              <Link href="/" className="inline-flex items-center gap-3 group">
+              <Link href="/" className="group inline-flex items-center gap-3">
                 <Image
                   src="/assets/TogetherWeCan.png"
                   alt="TogetherWeCan Logo"
@@ -97,7 +171,11 @@ const Login = () => {
             </div>
 
             {/* Login Form */}
-            <form className="space-y-5" autoComplete="off" data-lpignore="true">
+            <form
+              onSubmit={handleEmailLogin}
+              className="space-y-5"
+              autoComplete="off"
+              data-lpignore="true">
               {/* Email */}
               <div>
                 <label
@@ -114,12 +192,13 @@ const Login = () => {
 
                   <input
                     id="email"
-                    name="login-email"
+                    name="email"
                     type="email"
                     placeholder="Enter your email"
                     autoComplete="off"
                     autoCorrect="off"
                     spellCheck={false}
+                    required
                     data-lpignore="true"
                     data-1p-ignore="true"
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3.5 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
@@ -151,10 +230,11 @@ const Login = () => {
 
                   <input
                     id="password"
-                    name="login-password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    autoComplete="new-password"
+                    autoComplete="current-password"
+                    required
                     data-lpignore="true"
                     data-1p-ignore="true"
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3.5 pl-12 pr-12 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
@@ -174,10 +254,12 @@ const Login = () => {
 
               {/* Login Button */}
               <button
-                type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg">
-                Login to Your Account
-                <ArrowRight size={18} />
+                type="submit"
+                disabled={isSubmitting}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">
+                {isSubmitting ? "Logging In..." : "Login to Your Account"}
+
+                {!isSubmitting && <ArrowRight size={18} />}
               </button>
             </form>
 
@@ -196,6 +278,7 @@ const Login = () => {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
+                onClick={handleGoogleLogin}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50">
                 <Image
                   src="/assets/google.png"
@@ -208,6 +291,7 @@ const Login = () => {
 
               <button
                 type="button"
+                onClick={handleGithubLogin}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50">
                 <Image
                   src="/assets/github.png"

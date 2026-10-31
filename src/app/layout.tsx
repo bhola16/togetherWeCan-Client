@@ -1,9 +1,10 @@
 import Navbar from "@/components/Home/Navbar";
 import type { Metadata } from "next";
 import { Josefin_Sans } from "next/font/google";
-import { Footer } from "react-day-picker";
+
 import { Toaster } from "sonner";
 import "./globals.css";
+import Footer from "@/components/Home/Footer";
 
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],

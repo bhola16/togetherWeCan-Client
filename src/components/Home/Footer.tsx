@@ -89,7 +89,7 @@ const Footer = () => {
 
               <li>
                 <Link href="/login" className="transition hover:text-green-400">
-                  Sign In
+                  Login
                 </Link>
               </li>
 

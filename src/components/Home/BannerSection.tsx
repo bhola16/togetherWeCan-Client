@@ -86,7 +86,7 @@ const BannerSection = () => {
               </Link>
 
               <Link
-                href="/create-events"
+                href="/events/create"
                 className="group inline-flex items-center gap-2 rounded-lg border border-green-700 px-6 py-3.5 font-semibold text-green-800 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-lg active:scale-95">
                 <PlusCircle
                   size={18}

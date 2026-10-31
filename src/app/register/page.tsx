@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import {
   ArrowRight,
   Check,
@@ -13,17 +14,83 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 const Register = () => {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Password validation
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const hasMinLength = password.length >= 6;
 
   const passwordValid = hasUppercase && hasLowercase && hasMinLength;
+
+  // Email registration
+  const handleEmailSignUp = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isSubmitting) return;
+
+    const formData = new FormData(e.currentTarget);
+
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const image = String(formData.get("image") ?? "").trim();
+    const passwordValue = String(formData.get("password") ?? "");
+
+    // Validate required fields
+    if (!name || !email || !passwordValue) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    // Validate password
+    if (!passwordValid) {
+      toast.error("Please meet all password requirements.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await authClient.signUp.email({
+        name,
+        email,
+        password: passwordValue,
+        image: image || undefined,
+      });
+
+      console.log("Signup response:", data);
+      console.log("Signup error:", {
+        message: error?.message,
+        status: error?.status,
+        statusText: error?.statusText,
+        details: error,
+      });
+
+      if (error) {
+        toast.error(error.message || "Registration failed.");
+        return;
+      }
+
+      if (data) {
+        console.log(data);
+        toast.success("Account created successfully!");
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
@@ -35,7 +102,7 @@ const Register = () => {
 
           {/* Desktop Logo */}
           <div className="relative z-10">
-            <Link href="/" className="inline-flex items-center gap-3 group">
+            <Link href="/" className="group inline-flex items-center gap-3">
               <Image
                 src="/assets/TogetherWeCan.png"
                 alt="TogetherWeCan Logo"
@@ -81,7 +148,7 @@ const Register = () => {
           <div className="w-full max-w-md">
             {/* Mobile Logo */}
             <div className="mb-8 flex justify-center lg:hidden">
-              <Link href="/" className="inline-flex items-center gap-3 group">
+              <Link href="/" className="group inline-flex items-center gap-3">
                 <Image
                   src="/assets/TogetherWeCan.png"
                   alt="TogetherWeCan Logo"
@@ -114,7 +181,11 @@ const Register = () => {
             </div>
 
             {/* Register Form */}
-            <form className="space-y-4" autoComplete="off" data-lpignore="true">
+            <form
+              onSubmit={handleEmailSignUp}
+              className="space-y-4"
+              autoComplete="off"
+              data-lpignore="true">
               {/* Full Name */}
               <div>
                 <label
@@ -131,10 +202,11 @@ const Register = () => {
 
                   <input
                     id="name"
-                    name="register-name"
+                    name="name"
                     type="text"
                     placeholder="Enter your full name"
                     autoComplete="off"
+                    required
                     data-lpignore="true"
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
                   />
@@ -157,12 +229,13 @@ const Register = () => {
 
                   <input
                     id="email"
-                    name="register-email"
+                    name="email"
                     type="email"
                     placeholder="Enter your email"
                     autoComplete="off"
                     autoCorrect="off"
                     spellCheck={false}
+                    required
                     data-lpignore="true"
                     data-1p-ignore="true"
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
@@ -186,10 +259,11 @@ const Register = () => {
 
                   <input
                     id="imageUrl"
-                    name="profile-image"
+                    name="image"
                     type="url"
                     placeholder="Enter your profile image URL"
                     autoComplete="off"
+                    data-lpignore="true"
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
                   />
                 </div>
@@ -211,12 +285,13 @@ const Register = () => {
 
                   <input
                     id="password"
-                    name="register-password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="new-password"
+                    required
                     data-lpignore="true"
                     className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-12 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
                   />
@@ -287,11 +362,12 @@ const Register = () => {
 
               {/* Register Button */}
               <button
-                type="button"
-                disabled={!passwordValid}
+                type="submit"
+                disabled={!passwordValid || isSubmitting}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">
-                Create Account
-                <ArrowRight size={18} />
+                {isSubmitting ? "Creating Account..." : "Create Account"}
+
+                {!isSubmitting && <ArrowRight size={18} />}
               </button>
             </form>
 
@@ -306,7 +382,7 @@ const Register = () => {
               <div className="h-px flex-1 bg-gray-200" />
             </div>
 
-            {/* Social Login Buttons */}
+            {/* Social Registration Buttons */}
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"

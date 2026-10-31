@@ -1,24 +1,15 @@
 "use client";
 
-import {
-  ArrowRight,
-  CalendarDays,
-  Home,
-  Menu,
-  PlusCircle,
-  X,
-} from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { ArrowRight, CalendarDays, LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 const navLinks = [
-  {
-    name: "Home",
-    href: "/",
-    icon: Home,
-  },
   {
     name: "Upcoming Events",
     href: "/events",
@@ -28,7 +19,14 @@ const navLinks = [
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Get the logged-in user's session
+  const { data: session, isPending } = authClient.useSession();
+
+  const isLoggedIn = !!session?.user;
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -40,6 +38,22 @@ const Navbar = () => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+
+      toast.success("Logged out successfully!");
+
+      closeMenu();
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   return (
@@ -89,7 +103,6 @@ const Navbar = () => {
                 <Icon size={17} />
                 {link.name}
 
-                {/* Active Indicator */}
                 <span
                   className={`absolute -bottom-1 left-0 h-0.5 rounded-full bg-green-600 transition-all duration-300 ${
                     active ? "w-full" : "w-0 group-hover:w-full"
@@ -102,19 +115,45 @@ const Navbar = () => {
 
         {/* Desktop Action Buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/create-events"
-            className="inline-flex items-center gap-2 rounded-full border border-green-700 px-5 py-2.5 text-sm font-semibold text-green-800 transition duration-300 hover:-translate-y-0.5 hover:bg-green-50 hover:shadow-md">
-            <PlusCircle size={17} />
-            Create Event
-          </Link>
+          {!isPending &&
+            (isLoggedIn ? (
+              <div className="flex items-center gap-3">
+                {/* User Profile Image */}
+                <div
+                  className="relative flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-green-600 bg-green-100 shadow-sm transition duration-300 hover:scale-105 hover:shadow-md"
+                  title={session.user.name || "User Profile"}>
+                  {session.user.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt={session.user.name || "User profile"}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="font-bold text-green-800">
+                      {session.user.name?.charAt(0).toUpperCase() || "U"}
+                    </span>
+                  )}
+                </div>
 
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-2 rounded-full bg-green-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-md">
-            Login
-            <ArrowRight size={16} />
-          </Link>
+                {/* Logout Button */}
+                <Button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center justify-center gap-2 rounded-lg bg-red-50 px-4 py-4 text-md font-semibold text-red-600 transition hover:bg-red-100">
+                  <LogOut size={18} />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-full bg-green-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-md">
+                Login
+                <ArrowRight size={16} />
+              </Link>
+            ))}
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -161,22 +200,55 @@ const Navbar = () => {
 
           {/* Mobile Action Buttons */}
           <div className="grid grid-cols-2 gap-3 border-t border-green-100 pt-4">
-            <Link
-              href="/create-events"
-              onClick={closeMenu}
-              className="flex items-center justify-center gap-2 rounded-lg border border-green-700 px-3 py-3 text-sm font-semibold text-green-800 transition hover:bg-green-50">
-              <PlusCircle size={17} />
-              Create Event
-            </Link>
-
-            <Link
-              href="/login"
-              onClick={closeMenu}
-              className="flex items-center justify-center gap-2 rounded-lg bg-green-700 px-3 py-3 text-sm font-semibold text-white transition hover:bg-green-800">
-              Sign In
-              <ArrowRight size={16} />
-            </Link>
+            {!isPending &&
+              (isLoggedIn ? (
+                <Button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center justify-center gap-2 rounded-lg bg-red-50 px-3 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100">
+                  <LogOut size={17} />
+                  Logout
+                </Button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={closeMenu}
+                  className="flex text-right items-center justify-center gap-2 rounded-lg bg-green-700 px-3 py-3 text-sm font-semibold text-white transition hover:bg-green-800">
+                  Login
+                  <ArrowRight size={16} />
+                </Link>
+              ))}
           </div>
+
+          {/* Mobile User Profile */}
+          {isLoggedIn && (
+            <div className="flex items-center gap-3 border-t border-green-100 pt-4">
+              <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-green-600 bg-green-100">
+                {session.user.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || "User profile"}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="font-bold text-green-800">
+                    {session.user.name?.charAt(0).toUpperCase() || "U"}
+                  </span>
+                )}
+              </div>
+
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-gray-800">
+                  {session.user.name}
+                </p>
+                <p className="truncate text-xs text-gray-500">
+                  {session.user.email}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
