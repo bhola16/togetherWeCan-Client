@@ -44,7 +44,7 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-green-100 bg-white/95 shadow-sm backdrop-blur-md">
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 lg:px-8">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
         {/* Logo and Website Name */}
         <Link
           href="/"
@@ -53,8 +53,8 @@ const Navbar = () => {
           <Image
             src="/assets/TogetherWeCan.png"
             alt="TogetherWeCan Logo"
-            width={55}
-            height={55}
+            width={50}
+            height={50}
             priority
             className="rounded-2xl bg-green-200 object-contain transition duration-300 group-hover:scale-105"
           />

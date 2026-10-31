@@ -1,0 +1,357 @@
+"use client";
+
+import {
+  ArrowRight,
+  Check,
+  Eye,
+  EyeOff,
+  Image as ImageIcon,
+  Lock,
+  Mail,
+  User,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+
+const Register = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasMinLength = password.length >= 6;
+
+  const passwordValid = hasUppercase && hasLowercase && hasMinLength;
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+      <div className="grid w-full max-w-md overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl sm:max-w-lg md:max-w-xl lg:max-w-5xl lg:grid-cols-2">
+        {/* Left Side */}
+        <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-teal-800 via-teal-800 to-emerald-700 p-10 text-white lg:flex">
+          <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full border-[40px] border-white/5" />
+          <div className="absolute -bottom-28 -left-20 h-80 w-80 rounded-full border-[40px] border-white/5" />
+
+          {/* Desktop Logo */}
+          <div className="relative z-10">
+            <Link href="/" className="inline-flex items-center gap-3 group">
+              <Image
+                src="/assets/TogetherWeCan.png"
+                alt="TogetherWeCan Logo"
+                width={50}
+                height={50}
+                priority
+                className="h-12 w-12 object-contain transition duration-300 group-hover:scale-105"
+              />
+
+              <h1 className="text-xl font-extrabold tracking-tight text-white">
+                Together
+                <span className="text-emerald-300">WeCan</span>
+              </h1>
+            </Link>
+          </div>
+
+          {/* Welcome Content */}
+          <div className="relative z-10 my-12">
+            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-emerald-200">
+              Join Our Community
+            </span>
+
+            <h2 className="mt-7 text-4xl font-extrabold leading-tight xl:text-5xl">
+              Be the Reason Someone Smiles Today.
+            </h2>
+
+            <p className="mt-6 max-w-md text-base leading-8 text-teal-100">
+              Create an account, discover community events, connect with people,
+              and make a positive impact together.
+            </p>
+          </div>
+
+          {/* Bottom Text */}
+          <div className="relative z-10 border-t border-white/15 pt-6">
+            <p className="text-sm text-teal-100">
+              Small actions can create a big difference.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Side */}
+        <div className="flex items-center justify-center p-5 sm:p-7 md:p-8 lg:p-12">
+          <div className="w-full max-w-md">
+            {/* Mobile Logo */}
+            <div className="mb-8 flex justify-center lg:hidden">
+              <Link href="/" className="inline-flex items-center gap-3 group">
+                <Image
+                  src="/assets/TogetherWeCan.png"
+                  alt="TogetherWeCan Logo"
+                  width={50}
+                  height={50}
+                  priority
+                  className="h-12 w-12 object-contain transition duration-300 group-hover:scale-105"
+                />
+
+                <h1 className="text-xl font-extrabold tracking-tight text-gray-900">
+                  Together
+                  <span className="text-green-600">WeCan</span>
+                </h1>
+              </Link>
+            </div>
+
+            {/* Heading */}
+            <div className="mb-7">
+              <p className="text-sm font-bold uppercase tracking-widest text-teal-700">
+                Create Account
+              </p>
+
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                Join TogetherWeCan!
+              </h2>
+
+              <p className="mt-3 text-sm leading-6 text-gray-500">
+                Create your account and start making a difference.
+              </p>
+            </div>
+
+            {/* Register Form */}
+            <form className="space-y-4" autoComplete="off" data-lpignore="true">
+              {/* Full Name */}
+              <div>
+                <label
+                  htmlFor="name"
+                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  Full Name
+                </label>
+
+                <div className="relative">
+                  <User
+                    size={19}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+
+                  <input
+                    id="name"
+                    name="register-name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    autoComplete="off"
+                    data-lpignore="true"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  Email Address
+                </label>
+
+                <div className="relative">
+                  <Mail
+                    size={19}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+
+                  <input
+                    id="email"
+                    name="register-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                  />
+                </div>
+              </div>
+
+              {/* Profile Image URL */}
+              <div>
+                <label
+                  htmlFor="imageUrl"
+                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  Profile Image URL
+                </label>
+
+                <div className="relative">
+                  <ImageIcon
+                    size={19}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+
+                  <input
+                    id="imageUrl"
+                    name="profile-image"
+                    type="url"
+                    placeholder="Enter your profile image URL"
+                    autoComplete="off"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  Password
+                </label>
+
+                <div className="relative">
+                  <Lock
+                    size={19}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+
+                  <input
+                    id="password"
+                    name="register-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-12 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-teal-700">
+                    {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+                  </button>
+                </div>
+
+                {/* Password Requirements */}
+                <div className="mt-3 space-y-2 rounded-xl bg-gray-50 p-3">
+                  <p className="mb-2 text-xs font-semibold text-gray-600">
+                    Password must contain:
+                  </p>
+
+                  <div className="flex items-center gap-2">
+                    {hasMinLength ? (
+                      <Check size={15} className="text-emerald-600" />
+                    ) : (
+                      <X size={15} className="text-gray-400" />
+                    )}
+
+                    <span
+                      className={`text-xs ${
+                        hasMinLength ? "text-emerald-700" : "text-gray-500"
+                      }`}>
+                      At least 6 characters
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {hasUppercase ? (
+                      <Check size={15} className="text-emerald-600" />
+                    ) : (
+                      <X size={15} className="text-gray-400" />
+                    )}
+
+                    <span
+                      className={`text-xs ${
+                        hasUppercase ? "text-emerald-700" : "text-gray-500"
+                      }`}>
+                      At least one uppercase letter (A-Z)
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {hasLowercase ? (
+                      <Check size={15} className="text-emerald-600" />
+                    ) : (
+                      <X size={15} className="text-gray-400" />
+                    )}
+
+                    <span
+                      className={`text-xs ${
+                        hasLowercase ? "text-emerald-700" : "text-gray-500"
+                      }`}>
+                      At least one lowercase letter (a-z)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Register Button */}
+              <button
+                type="button"
+                disabled={!passwordValid}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">
+                Create Account
+                <ArrowRight size={18} />
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="my-7 flex items-center gap-4">
+              <div className="h-px flex-1 bg-gray-200" />
+
+              <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
+                Or continue with
+              </span>
+
+              <div className="h-px flex-1 bg-gray-200" />
+            </div>
+
+            {/* Social Login Buttons */}
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50">
+                <Image
+                  src="/assets/google.png"
+                  alt="Google logo"
+                  height={20}
+                  width={20}
+                />
+                Register with Google
+              </button>
+
+              <button
+                type="button"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50">
+                <Image
+                  src="/assets/github.png"
+                  alt="GitHub logo"
+                  height={20}
+                  width={20}
+                />
+                Register with GitHub
+              </button>
+            </div>
+
+            {/* Login Link */}
+            <p className="mt-8 text-center text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-bold text-teal-700 transition hover:text-teal-900 hover:underline">
+                Login Here
+              </Link>
+            </p>
+
+            {/* Footer */}
+            <p className="mt-8 text-center text-xs text-gray-400">
+              © {new Date().getFullYear()} TogetherWeCan. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default Register;

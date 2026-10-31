@@ -1,22 +1,25 @@
+import { IEvent } from "@/type/Type";
 import {
   ArrowLeft,
+  ArrowRight,
+  CalendarCheck,
   CalendarDays,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  HeartHandshake,
+  Mail,
   MapPin,
+  Sparkles,
   Tag,
   Users,
-  HeartHandshake,
-  ArrowRight,
 } from "lucide-react";
-
 import Image from "next/image";
 import Link from "next/link";
-
-import { IEvent } from "@/type/Type";
+import { notFound } from "next/navigation";
 
 interface EventDetailsPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
 const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
@@ -26,166 +29,455 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     cache: "no-store",
   });
 
+  if (res.status === 404) notFound();
+
   if (!res.ok) {
     throw new Error("Failed to fetch event details");
   }
 
-  const event: IEvent = await res.json();
+  const event: IEvent | null = await res.json();
 
-  const formattedDate = new Date(event.eventDate).toLocaleDateString("en-US", {
+  if (!event) notFound();
+
+  const eventDate = new Date(`${event.eventDate.slice(0, 10)}T00:00:00Z`);
+
+  const formattedDate = eventDate.toLocaleDateString("en-US", {
+    weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "UTC",
   });
 
-  return (
-    <section className="min-h-screen bg-gradient-to-b from-green-50/70 via-white to-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        {/* Back Button */}
-        <Link
-          href="/upcomingevents"
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-5 py-2.5 text-sm font-semibold text-green-700 shadow-sm transition-all hover:bg-green-700 hover:text-white">
-          <ArrowLeft size={17} />
-          Back to Events
-        </Link>
+  const today = new Date();
 
-        {/* Event Details Card */}
-        <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-lg">
-          {/* Event Image */}
-          <div className="relative h-64 w-full sm:h-96">
+  const todayUTC = Date.UTC(
+    today.getUTCFullYear(),
+    today.getUTCMonth(),
+    today.getUTCDate(),
+  );
+
+  const daysRemaining = Math.ceil(
+    (eventDate.getTime() - todayUTC) / (1000 * 60 * 60 * 24),
+  );
+
+  const isUpcoming = daysRemaining >= 0;
+  const isToday = daysRemaining === 0;
+
+  const statusText = isToday
+    ? "Happening Today"
+    : isUpcoming
+      ? "Upcoming Event"
+      : "Completed";
+
+  return (
+    <main className="min-h-screen bg-[#f7faf9] pb-16">
+      <div className="mx-auto max-w-7xl px-4 pt-7 sm:px-6 lg:px-8">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
+          <Link
+            href="/events"
+            className="group inline-flex items-center gap-2 text-sm font-semibold text-gray-500 transition hover:text-teal-700">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white transition group-hover:border-teal-200 group-hover:bg-teal-50">
+              <ArrowLeft size={17} />
+            </span>
+            Back to All Events
+          </Link>
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold tracking-wide text-teal-800 shadow-sm">
+            <Sparkles size={15} className="text-emerald-500" />
+            TogetherWeCan Community
+          </div>
+        </div>
+
+        {/* Hero Section */}
+        <section className="relative isolate overflow-hidden rounded-[2rem] bg-gray-950 shadow-xl">
+          <div className="relative h-[440px] sm:h-[500px] lg:h-[570px]">
             <Image
               src={event.imageUrl}
               alt={event.title}
               fill
               priority
+              sizes="(max-width: 768px) 100vw, 1200px"
               className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 1024px"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-950/30 to-transparent" />
 
-            {/* Category Badge */}
-            <div className="absolute left-6 top-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/90 px-4 py-2 text-sm font-semibold text-emerald-800 shadow-md backdrop-blur-md">
-              <Tag size={15} />
-              {event.eventType}
-            </div>
+            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-10 lg:p-14">
+              <div className="mb-5 flex flex-wrap items-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg">
+                  <Tag size={14} />
+                  {event.eventType}
+                </span>
 
-            {/* Event Title and Date */}
-            <div className="absolute bottom-6 left-6 right-6">
-              <h1 className="text-3xl font-extrabold text-white drop-shadow-md sm:text-4xl lg:text-5xl">
+                <span
+                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold backdrop-blur-md ${
+                    isUpcoming
+                      ? "border-white/20 bg-white/15 text-white"
+                      : "border-gray-400/30 bg-gray-700/70 text-gray-100"
+                  }`}>
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      isUpcoming ? "bg-emerald-400" : "bg-gray-300"
+                    }`}
+                  />
+                  {statusText}
+                </span>
+              </div>
+
+              <h1 className="max-w-4xl text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl lg:text-6xl">
                 {event.title}
               </h1>
 
-              <div className="mt-3 flex items-center gap-2 text-white">
-                <CalendarDays size={18} />
-                <span className="text-sm font-medium sm:text-base">
+              <div className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-4 text-sm font-medium text-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-emerald-300 backdrop-blur-sm">
+                    <CalendarDays size={18} />
+                  </span>
                   {formattedDate}
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-emerald-300 backdrop-blur-sm">
+                    <MapPin size={18} />
+                  </span>
+                  <span className="max-w-[260px]">{event.location}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Content Layout */}
+        <div className="mt-10 grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
+          {/* Main Content */}
+          <div className="space-y-8 lg:col-span-2">
+            {/* Event Overview */}
+            <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
+              <div className="mb-7">
+                <span className="text-xs font-extrabold uppercase tracking-[0.2em] text-teal-700">
+                  Event Overview
                 </span>
+
+                <h2 className="mt-2 text-2xl font-extrabold text-gray-900 sm:text-3xl">
+                  Get to Know the Event
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-gray-500">
+                  Here are the key details about this community event.
+                </p>
               </div>
-            </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="group flex items-start gap-4 rounded-2xl border border-teal-100/80 bg-teal-50/60 p-5 transition hover:border-teal-200 hover:bg-teal-50">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-700 transition group-hover:bg-teal-700 group-hover:text-white">
+                    <Tag size={22} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                      Event Category
+                    </p>
+                    <p className="mt-2 break-words font-bold text-gray-900">
+                      {event.eventType}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="group flex items-start gap-4 rounded-2xl border border-emerald-100/80 bg-emerald-50/60 p-5 transition hover:border-emerald-200 hover:bg-emerald-50">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 transition group-hover:bg-emerald-600 group-hover:text-white">
+                    <Users size={22} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                      Event Organizer
+                    </p>
+                    <p className="mt-2 break-all font-bold text-gray-900">
+                      {event.organizerEmail}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* About Event */}
+            <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8">
+              <div className="mb-6 flex items-center gap-4">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+                  <HeartHandshake size={27} />
+                </div>
+
+                <div>
+                  <span className="text-xs font-extrabold uppercase tracking-[0.2em] text-amber-700">
+                    Discover More
+                  </span>
+                  <h2 className="mt-1 text-2xl font-extrabold text-gray-900">
+                    About This Event
+                  </h2>
+                </div>
+              </div>
+
+              <div className="mb-5 h-px w-full bg-gray-100" />
+
+              <p className="whitespace-pre-line text-base leading-8 text-gray-600">
+                {event.description}
+              </p>
+            </section>
+
+            {/* Before You Attend */}
+            <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-teal-800 via-teal-800 to-emerald-900 p-6 text-white shadow-lg sm:p-8">
+              {/* Section Heading */}
+              <div className="mb-8">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">
+                  <HeartHandshake size={26} />
+                </div>
+
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-300">
+                  Make the Most of It
+                </p>
+
+                <h2 className="mt-2 text-2xl font-extrabold sm:text-3xl">
+                  Before You Attend
+                </h2>
+
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-teal-100">
+                  A little preparation can make your experience more enjoyable
+                  and meaningful. Keep these helpful suggestions in mind before
+                  joining the event.
+                </p>
+              </div>
+
+              {/* Preparation Tips */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    icon: Clock,
+                    title: "Arrive on Time",
+                    description:
+                      "Try to arrive a little before the scheduled starting time. This gives you enough time to get familiar with the venue and settle in comfortably.",
+                  },
+                  {
+                    icon: CalendarDays,
+                    title: "Plan Ahead",
+                    description:
+                      "Check your schedule and make the necessary arrangements in advance. Consider your travel time and anything you might need to bring along.",
+                  },
+                  {
+                    icon: Users,
+                    title: "Engage with Others",
+                    description:
+                      "Be open to meeting new people, sharing ideas, and working together. Positive interaction helps build stronger community connections.",
+                  },
+                  {
+                    icon: CheckCircle2,
+                    title: "Follow Guidelines",
+                    description:
+                      "Pay attention to the instructions provided by the event organizer. Following the guidelines helps ensure a smooth and organized experience for everyone.",
+                  },
+                  {
+                    icon: HeartHandshake,
+                    title: "Respect Everyone",
+                    description:
+                      "Treat participants, volunteers, and organizers with kindness and respect. Be considerate of different perspectives and maintain a welcoming environment.",
+                  },
+                  {
+                    icon: Sparkles,
+                    title: "Make an Impact",
+                    description:
+                      "Participate actively and contribute wherever possible. Even small efforts, thoughtful conversations, and helpful actions can make a meaningful difference.",
+                  },
+                ].map((tip) => {
+                  const Icon = tip.icon;
+
+                  return (
+                    <div
+                      key={tip.title}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-5 transition duration-300 hover:-translate-y-1 hover:bg-white/10">
+                      <div className="mb-3 flex items-center gap-3">
+                        <div className="rounded-xl bg-emerald-400/15 p-2.5 text-emerald-300">
+                          <Icon size={21} />
+                        </div>
+
+                        <h3 className="font-bold text-white">{tip.title}</h3>
+                      </div>
+
+                      <p className="text-sm leading-7 text-teal-100">
+                        {tip.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Closing Message */}
+              <div className="mt-7 flex items-start gap-3 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-5">
+                <HeartHandshake
+                  size={23}
+                  className="mt-0.5 shrink-0 text-emerald-300"
+                />
+
+                <div>
+                  <h3 className="font-bold text-white">
+                    Together, We Can Make a Difference
+                  </h3>
+
+                  <p className="mt-1 text-sm leading-6 text-teal-100">
+                    Your presence, participation, and willingness to help make
+                    every community event more valuable.
+                  </p>
+                </div>
+              </div>
+            </section>
           </div>
 
-          {/* Event Information */}
-          <div className="grid grid-cols-1 gap-4 border-b border-gray-100 bg-gray-50/70 p-6 sm:grid-cols-3">
-            {/* Location */}
-            <div className="flex items-center gap-3 rounded-xl border border-teal-100 bg-white p-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-700">
-                <MapPin size={21} />
+          {/* Sidebar */}
+          <aside className="space-y-6 lg:sticky lg:top-8">
+            {/* Countdown Card */}
+            <section className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
+              <div className="border-b border-gray-100 p-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-100 text-teal-700">
+                    <Clock size={22} />
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                      Event Countdown
+                    </p>
+
+                    <h2 className="mt-1 text-lg font-extrabold text-gray-900">
+                      {isToday
+                        ? "It's Event Day!"
+                        : isUpcoming
+                          ? "Coming Soon"
+                          : "Event Finished"}
+                    </h2>
+                  </div>
+                </div>
               </div>
 
-              <div className="min-w-0">
-                <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Location
-                </p>
-                <p className="truncate text-sm font-semibold text-gray-800">
-                  {event.location}
-                </p>
-              </div>
-            </div>
+              <div className="p-6">
+                {isUpcoming ? (
+                  <div className="rounded-2xl bg-gradient-to-br from-teal-700 to-emerald-600 p-7 text-center text-white shadow-inner">
+                    <p className="text-sm font-medium text-teal-100">
+                      {isToday ? "The event is scheduled for" : "Only"}
+                    </p>
 
-            {/* Organizer */}
-            <div className="flex items-center gap-3 rounded-xl border border-emerald-100 bg-white p-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
-                <Users size={21} />
+                    <p className="my-3 text-5xl font-extrabold tracking-tight">
+                      {isToday ? "Today" : daysRemaining}
+                    </p>
+
+                    {!isToday && (
+                      <p className="text-sm font-semibold text-teal-100">
+                        {daysRemaining === 1
+                          ? "day remaining"
+                          : "days remaining"}
+                      </p>
+                    )}
+
+                    <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-emerald-300/70" />
+                  </div>
+                ) : (
+                  <div className="rounded-2xl bg-gray-100 p-6 text-center">
+                    <CalendarCheck
+                      size={32}
+                      className="mx-auto text-gray-400"
+                    />
+                    <p className="mt-3 font-bold text-gray-700">
+                      This event has ended
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Thank you for your interest.
+                    </p>
+                  </div>
+                )}
+
+                <div className="mt-5 flex items-start gap-3 rounded-xl bg-gray-50 p-4">
+                  <CalendarDays
+                    size={20}
+                    className="mt-0.5 shrink-0 text-teal-700"
+                  />
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                      Scheduled Date
+                    </p>
+                    <p className="mt-1 text-sm font-bold leading-6 text-gray-900">
+                      {formattedDate}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Contact Organizer */}
+            <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                <Mail size={23} />
               </div>
 
-              <div className="min-w-0">
-                <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Organized By
-                </p>
-                <p className="truncate text-sm font-semibold text-gray-800">
-                  {event.organizerEmail}
-                </p>
-              </div>
-            </div>
-
-            {/* Event Date */}
-            <div className="flex items-center gap-3 rounded-xl border border-amber-100 bg-white p-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
-                <CalendarDays size={21} />
-              </div>
-
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Event Date
-                </p>
-                <p className="text-sm font-semibold text-gray-800">
-                  {formattedDate}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Event Description */}
-          <div className="p-6 sm:p-8">
-            <div className="mb-5">
-              <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-teal-700">
-                <HeartHandshake size={18} />
-                Event Overview
-              </div>
-
-              <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
-                Discover What This Event Is About
+              <h2 className="mt-5 text-xl font-extrabold text-gray-900">
+                Need More Information?
               </h2>
 
-              <p className="mt-2 text-sm leading-6 text-gray-500">
-                Learn more about the event, its purpose, and how you can be part
-                of it.
-              </p>
-            </div>
-
-            <p className="whitespace-pre-line text-base leading-8 text-gray-600">
-              {event.description}
-            </p>
-
-            {/* Bottom Section */}
-            <div className="mt-10 overflow-hidden rounded-2xl bg-teal-700 p-6 text-center sm:p-8">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-white">
-                <HeartHandshake size={28} />
-              </div>
-
-              <h3 className="mt-4 text-xl font-bold text-white sm:text-2xl">
-                Be Part of the Change!
-              </h3>
-
-              <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-teal-50">
-                Every event is an opportunity to connect, contribute, and make a
-                positive difference. Explore our community events and find an
-                opportunity to get involved.
+              <p className="mt-2 text-sm leading-7 text-gray-500">
+                Have questions or need clarification? Contact the event
+                organizer directly for more information.
               </p>
 
-              <Link
-                href="/upcomingevents"
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-teal-800 shadow-md transition-all hover:bg-amber-100 hover:text-teal-900">
-                Explore More Events
+              <a
+                href={`mailto:${event.organizerEmail}`}
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-amber-600 hover:shadow-md">
+                Contact Organizer
                 <ArrowRight size={17} />
-              </Link>
-            </div>
-          </div>
+              </a>
+            </section>
+
+            {/* Explore Events */}
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-800 p-6 text-white shadow-md">
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full border-[18px] border-white/10" />
+
+              <div className="relative">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/15">
+                  <Sparkles size={22} />
+                </div>
+
+                <h2 className="text-xl font-extrabold">Discover More Events</h2>
+
+                <p className="mt-2 text-sm leading-6 text-teal-50">
+                  Explore other activities and find more opportunities to
+                  connect with your community.
+                </p>
+
+                <Link
+                  href="/events"
+                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-teal-800 transition hover:bg-emerald-50">
+                  Explore Events
+                  <ExternalLink size={16} />
+                </Link>
+              </div>
+            </section>
+          </aside>
+        </div>
+
+        {/* Bottom Navigation */}
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-7 sm:flex-row">
+          <p className="text-center text-sm text-gray-500 sm:text-left">
+            Building stronger communities, one event at a time.
+          </p>
+
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-bold text-gray-700 transition hover:border-teal-200 hover:bg-teal-50 hover:text-teal-800">
+            <ArrowLeft size={16} />
+            Back to All Events
+          </Link>
         </div>
       </div>
-    </section>
+    </main>
   );
 };
 
