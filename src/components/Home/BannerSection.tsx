@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -45,28 +46,28 @@ const statistics = [
 
 const BannerSection = () => {
   return (
-    <section className="overflow-hidden bg-[#F8FAF7]">
+    <section className="overflow-hidden bg-[#F8FAF7] dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-6">
         {/* Hero Section */}
         <div className="grid items-center gap-10 py-8 md:grid-cols-2 md:gap-12 md:py-12">
           {/* Left Content */}
           <div className="space-y-6">
             {/* Badge */}
-            <div className="inline-flex cursor-default items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-800 transition duration-300 hover:bg-green-200 hover:shadow-sm">
+            <div className="inline-flex cursor-default items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-800 transition duration-300 hover:bg-green-200 hover:shadow-sm dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60">
               <HeartHandshake size={17} className="animate-pulse" />
               Together, We Make a Difference
             </div>
 
             {/* Heading */}
-            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-[#101A16] sm:text-5xl lg:text-6xl">
+            <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-[#101A16] dark:text-white sm:text-5xl lg:text-6xl">
               Small Actions.
-              <span className="block text-green-700 transition-colors duration-300 hover:text-green-600">
+              <span className="block text-green-700 transition-colors duration-300 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300">
                 Greater Impact.
               </span>
             </h1>
 
             {/* Description */}
-            <p className="max-w-xl text-base leading-8 text-gray-600 md:text-lg">
+            <p className="max-w-xl text-base leading-8 text-gray-600 dark:text-gray-300 md:text-lg">
               Be part of something meaningful. Discover community events,
               connect with passionate people, and turn small acts of kindness
               into lasting change. Together, we can build a stronger and more
@@ -77,7 +78,8 @@ const BannerSection = () => {
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/events"
-                className="group inline-flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3.5 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl active:scale-95">
+                className="group inline-flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3.5 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl active:scale-95"
+              >
                 Explore Upcoming Events
                 <ArrowRight
                   size={18}
@@ -87,7 +89,8 @@ const BannerSection = () => {
 
               <Link
                 href="/events/create"
-                className="group inline-flex items-center gap-2 rounded-lg border border-green-700 px-6 py-3.5 font-semibold text-green-800 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-lg active:scale-95">
+                className="group inline-flex items-center gap-2 rounded-lg border border-green-700 px-6 py-3.5 font-semibold text-green-800 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-lg active:scale-95 dark:border-green-500 dark:text-green-400 dark:hover:bg-green-950"
+              >
                 <PlusCircle
                   size={18}
                   className="transition-transform duration-300 group-hover:rotate-90"
@@ -99,21 +102,23 @@ const BannerSection = () => {
             {/* Community Message */}
             <div className="flex items-center gap-4 pt-2">
               <div className="flex -space-x-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-green-200 text-sm font-bold text-green-800 transition-transform duration-300 hover:z-10 hover:-translate-y-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-green-200 text-sm font-bold text-green-800 transition-transform duration-300 hover:z-10 hover:-translate-y-2 dark:border-gray-950">
                   A
                 </div>
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-orange-200 text-sm font-bold text-orange-800 transition-transform duration-300 hover:z-10 hover:-translate-y-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-orange-200 text-sm font-bold text-orange-800 transition-transform duration-300 hover:z-10 hover:-translate-y-2 dark:border-gray-950">
                   B
                 </div>
 
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-emerald-200 text-sm font-bold text-emerald-800 transition-transform duration-300 hover:z-10 hover:-translate-y-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-emerald-200 text-sm font-bold text-emerald-800 transition-transform duration-300 hover:z-10 hover:-translate-y-2 dark:border-gray-950">
                   C
                 </div>
               </div>
 
-              <p className="text-sm text-gray-600">
-                <span className="font-bold text-[#101A16]">One Community</span>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="font-bold text-[#101A16] dark:text-white">
+                  One Community
+                </span>
                 <br />
                 Working together for a better tomorrow
               </p>
@@ -139,10 +144,12 @@ const BannerSection = () => {
               />
 
               {/* Image Caption */}
-              <div className="absolute bottom-5 left-5 right-5 translate-y-2 rounded-2xl border border-white/30 bg-white/90 p-4 opacity-90 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                <p className="font-bold text-[#101A16]">Every Action Counts.</p>
+              <div className="absolute bottom-5 left-5 right-5 translate-y-2 rounded-2xl border border-white/30 bg-white/90 p-4 opacity-90 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 dark:border-gray-600/50 dark:bg-gray-900/90">
+                <p className="font-bold text-[#101A16] dark:text-white">
+                  Every Action Counts.
+                </p>
 
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                   Start making a positive impact in your community today.
                 </p>
               </div>
@@ -161,26 +168,27 @@ const BannerSection = () => {
                   key={stat.label}
                   href={stat.href}
                   aria-label={`${stat.label}: ${stat.value}. ${stat.description}`}
-                  className="group flex items-center gap-4 rounded-xl border border-green-200 bg-white/70 px-5 py-4 transition-all duration-300 hover:-translate-y-1 hover:border-green-500 hover:bg-white hover:shadow-lg active:scale-[0.98]">
+                  className="group flex items-center gap-4 rounded-xl border border-green-200 bg-white/70 px-5 py-4 transition-all duration-300 hover:-translate-y-1 hover:border-green-500 hover:bg-white hover:shadow-lg active:scale-[0.98] dark:border-green-900 dark:bg-gray-900/80 dark:hover:border-green-600 dark:hover:bg-gray-800"
+                >
                   {/* Statistic Icon */}
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:bg-green-700 group-hover:text-white">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:bg-green-700 group-hover:text-white dark:bg-green-900/50 dark:text-green-400">
                     <Icon size={24} />
                   </div>
 
                   {/* Statistic Information */}
                   <div>
-                    <h3 className="text-2xl font-extrabold text-[#101A16] transition-colors duration-300 group-hover:text-green-700 sm:text-3xl">
+                    <h3 className="text-2xl font-extrabold text-[#101A16] transition-colors duration-300 group-hover:text-green-700 dark:text-white dark:group-hover:text-green-400 sm:text-3xl">
                       {stat.value}
                     </h3>
 
-                    <p className="mt-1 text-xs font-medium text-gray-500 transition-colors duration-300 group-hover:text-green-700 sm:text-sm">
+                    <p className="mt-1 text-xs font-medium text-gray-500 transition-colors duration-300 group-hover:text-green-700 dark:text-gray-400 dark:group-hover:text-green-400 sm:text-sm">
                       {stat.label}
                     </p>
                   </div>
 
                   <ArrowRight
                     size={16}
-                    className="ml-auto shrink-0 text-gray-300 transition-all duration-300 group-hover:translate-x-1 group-hover:text-green-700"
+                    className="ml-auto shrink-0 text-gray-300 transition-all duration-300 group-hover:translate-x-1 group-hover:text-green-700 dark:text-gray-600 dark:group-hover:text-green-400"
                   />
                 </Link>
               );

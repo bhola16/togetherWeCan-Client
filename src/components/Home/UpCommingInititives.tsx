@@ -1,3 +1,4 @@
+
 import { ArrowRight, CalendarDays } from "lucide-react";
 import Link from "next/link";
 
@@ -45,21 +46,25 @@ const initiatives = [
 
 const UpCommingInititives = () => {
   return (
-    <section className="bg-[#F8FAF7] px-6 py-16 md:py-20">
+    <section className="bg-[#F8FAF7] px-6 py-16 dark:bg-gray-950 md:py-20">
       <div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div className="max-w-2xl">
           <div className="mb-3 flex items-center gap-3">
-            <CalendarDays size={30} className="text-green-700" />
-            <h2 className="text-3xl font-extrabold tracking-tight text-[#101A16] sm:text-4xl">
+            <CalendarDays
+              size={30}
+              className="text-green-700 dark:text-green-400"
+            />
+
+            <h2 className="text-3xl font-extrabold tracking-tight text-[#101A16] dark:text-white sm:text-4xl">
               Upcoming Initiatives
             </h2>
           </div>
 
-          <p className="text-sm font-semibold text-green-700">
+          <p className="text-sm font-semibold text-green-700 dark:text-green-400">
             Recent Community Events
           </p>
 
-          <p className="mt-4 leading-7 text-gray-600">
+          <p className="mt-4 leading-7 text-gray-600 dark:text-gray-300">
             Explore upcoming community events and discover opportunities to
             volunteer, connect with others, and make a positive impact. More
             initiatives will be added soon!
@@ -68,7 +73,8 @@ const UpCommingInititives = () => {
 
         <Link
           href="/events"
-          className="group inline-flex shrink-0 items-center gap-2 font-bold text-green-700 transition hover:text-green-900">
+          className="group inline-flex shrink-0 items-center gap-2 font-bold text-green-700 transition hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+        >
           View All Events
           <ArrowRight
             size={18}

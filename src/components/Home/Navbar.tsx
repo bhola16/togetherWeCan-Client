@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
   {
@@ -57,7 +58,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-green-100 bg-white/95 shadow-sm backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-green-100 bg-white/95 shadow-sm backdrop-blur-md transition-colors duration-300 dark:border-gray-800 dark:bg-gray-950/95">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
         {/* Logo and Website Name */}
         <Link
@@ -74,12 +75,12 @@ const Navbar = () => {
           />
 
           <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
               Together
-              <span className="text-green-600">WeCan</span>
+              <span className="text-green-600 dark:text-green-400">WeCan</span>
             </h1>
 
-            <p className="text-[10px] font-medium tracking-widest text-gray-500">
+            <p className="text-[10px] font-medium tracking-widest text-gray-500 dark:text-gray-400">
               SMALL ACTIONS. GREATER IMPACT.
             </p>
           </div>
@@ -97,12 +98,13 @@ const Navbar = () => {
                 href={link.href}
                 className={`group relative flex items-center gap-2 py-2 text-sm font-semibold transition duration-300 ${
                   active
-                    ? "text-green-700"
-                    : "text-gray-600 hover:text-green-700"
+                    ? "text-green-700 dark:text-green-400"
+                    : "text-gray-600 hover:text-green-700 dark:text-gray-300 dark:hover:text-green-400"
                 }`}>
                 <Icon size={17} />
                 {link.name}
 
+                {/* Active Indicator */}
                 <span
                   className={`absolute -bottom-1 left-0 h-0.5 rounded-full bg-green-600 transition-all duration-300 ${
                     active ? "w-full" : "w-0 group-hover:w-full"
@@ -115,12 +117,15 @@ const Navbar = () => {
 
         {/* Desktop Action Buttons */}
         <div className="hidden items-center gap-3 md:flex">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           {!isPending &&
             (isLoggedIn ? (
               <div className="flex items-center gap-3">
                 {/* User Profile Image */}
                 <div
-                  className="relative flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-green-600 bg-green-100 shadow-sm transition duration-300 hover:scale-105 hover:shadow-md"
+                  className="relative flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-green-600 bg-green-100 shadow-sm transition duration-300 hover:scale-105 hover:shadow-md dark:border-green-400 dark:bg-green-950"
                   title={session.user.name || "User Profile"}>
                   {session.user.image ? (
                     <Image
@@ -131,7 +136,7 @@ const Navbar = () => {
                       className="object-cover"
                     />
                   ) : (
-                    <span className="font-bold text-green-800">
+                    <span className="font-bold text-green-800 dark:text-green-300">
                       {session.user.name?.charAt(0).toUpperCase() || "U"}
                     </span>
                   )}
@@ -141,7 +146,7 @@ const Navbar = () => {
                 <Button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-red-50 px-4 py-4 text-md font-semibold text-red-600 transition hover:bg-red-100">
+                  className="flex items-center justify-center gap-2 rounded-lg bg-red-50 px-4 py-4 text-md font-semibold text-red-600 transition hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70">
                   <LogOut size={18} />
                   Logout
                 </Button>
@@ -149,7 +154,7 @@ const Navbar = () => {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-full bg-green-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-md">
+                className="inline-flex items-center gap-2 rounded-full bg-green-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-md dark:bg-green-600 dark:hover:bg-green-500">
                 Login
                 <ArrowRight size={16} />
               </Link>
@@ -164,14 +169,14 @@ const Navbar = () => {
             isMenuOpen ? "Close navigation menu" : "Open navigation menu"
           }
           aria-expanded={isMenuOpen}
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition hover:bg-green-100 hover:text-green-700 md:hidden">
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition hover:bg-green-100 hover:text-green-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-green-400 md:hidden">
           {isMenuOpen ? <X size={25} /> : <Menu size={25} />}
         </button>
       </nav>
 
       {/* Mobile Navigation Menu */}
       <div
-        className={`overflow-hidden border-t border-green-100 bg-white transition-all duration-300 ease-in-out md:hidden ${
+        className={`overflow-hidden border-t border-green-100 bg-white transition-all duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-950 md:hidden ${
           isMenuOpen
             ? "max-h-96 opacity-100"
             : "max-h-0 border-transparent opacity-0"
@@ -189,8 +194,8 @@ const Navbar = () => {
                 onClick={closeMenu}
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition duration-200 ${
                   active
-                    ? "bg-green-100 text-green-800"
-                    : "text-gray-600 hover:bg-green-50 hover:text-green-700"
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+                    : "text-gray-600 hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
                 }`}>
                 <Icon size={19} />
                 {link.name}
@@ -199,13 +204,18 @@ const Navbar = () => {
           })}
 
           {/* Mobile Action Buttons */}
-          <div className="grid grid-cols-2 gap-3 border-t border-green-100 pt-4">
+          <div className="grid grid-cols-2 gap-3 border-t border-green-100 pt-4 dark:border-gray-800">
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-center rounded-lg border border-green-100 bg-green-50 dark:border-gray-700 dark:bg-gray-900">
+              <ThemeToggle />
+            </div>
+
             {!isPending &&
               (isLoggedIn ? (
                 <Button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-red-50 px-3 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100">
+                  className="flex items-center justify-center gap-2 rounded-lg bg-red-50 px-3 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70">
                   <LogOut size={17} />
                   Logout
                 </Button>
@@ -213,7 +223,7 @@ const Navbar = () => {
                 <Link
                   href="/login"
                   onClick={closeMenu}
-                  className="flex text-right items-center justify-center gap-2 rounded-lg bg-green-700 px-3 py-3 text-sm font-semibold text-white transition hover:bg-green-800">
+                  className="flex items-center justify-center gap-2 rounded-lg bg-green-700 px-3 py-3 text-sm font-semibold text-white transition hover:bg-green-800 dark:bg-green-600 dark:hover:bg-green-500">
                   Login
                   <ArrowRight size={16} />
                 </Link>
@@ -222,8 +232,8 @@ const Navbar = () => {
 
           {/* Mobile User Profile */}
           {isLoggedIn && (
-            <div className="flex items-center gap-3 border-t border-green-100 pt-4">
-              <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-green-600 bg-green-100">
+            <div className="flex items-center gap-3 border-t border-green-100 pt-4 dark:border-gray-800">
+              <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-green-600 bg-green-100 dark:border-green-400 dark:bg-green-950">
                 {session.user.image ? (
                   <Image
                     src={session.user.image}
@@ -233,17 +243,18 @@ const Navbar = () => {
                     className="object-cover"
                   />
                 ) : (
-                  <span className="font-bold text-green-800">
+                  <span className="font-bold text-green-800 dark:text-green-300">
                     {session.user.name?.charAt(0).toUpperCase() || "U"}
                   </span>
                 )}
               </div>
 
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-gray-800">
+                <p className="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">
                   {session.user.name}
                 </p>
-                <p className="truncate text-xs text-gray-500">
+
+                <p className="truncate text-xs text-gray-500 dark:text-gray-400">
                   {session.user.email}
                 </p>
               </div>

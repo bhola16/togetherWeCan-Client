@@ -1,11 +1,10 @@
 "use client";
 
-import { ArrowRight, Mail, HeartHandshake } from "lucide-react";
-import React from "react";
+import { ArrowRight, HeartHandshake, Mail } from "lucide-react";
 
 const Subscribe = () => {
   return (
-    <section className="bg-[#F8FAF7] px-6 py-16 md:py-20">
+    <section className="bg-[#F8FAF7] px-6 py-16 dark:bg-gray-950 md:py-20">
       <div className="mx-auto max-w-7xl">
         <div className="relative overflow-hidden rounded-3xl bg-green-800 px-6 py-12 text-center shadow-xl sm:px-12 md:py-16">
           {/* Background Decoration */}
@@ -29,20 +28,24 @@ const Subscribe = () => {
             {/* Subscribe Form - Static UI */}
             <form
               onSubmit={(e) => e.preventDefault()}
-              className="mx-auto mt-8 flex max-w-xl flex-col gap-3 rounded-2xl bg-white p-2 sm:flex-row">
+              className="mx-auto mt-8 flex max-w-xl flex-col gap-3 rounded-2xl bg-white p-2 dark:border dark:border-gray-700 dark:bg-gray-900 sm:flex-row">
               <div className="flex flex-1 items-center gap-3 px-3">
-                <Mail size={20} className="shrink-0 text-green-700" />
+                <Mail
+                  size={20}
+                  className="shrink-0 text-green-700 dark:text-green-400"
+                />
+
                 <input
                   type="email"
                   placeholder="Enter your email address"
-                  className="w-full bg-transparent py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400"
+                  className="w-full bg-transparent py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
                   required
                 />
               </div>
 
               <button
                 type="submit"
-                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-900">
+                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-900 dark:bg-green-600 dark:hover:bg-green-500">
                 Subscribe
                 <ArrowRight
                   size={18}

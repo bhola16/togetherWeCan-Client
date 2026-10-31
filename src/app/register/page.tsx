@@ -1,3 +1,4 @@
+
 "use client";
 
 import { authClient } from "@/lib/auth-client";
@@ -17,6 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
+
 const Register = () => {
   const router = useRouter();
 
@@ -93,8 +95,8 @@ const Register = () => {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-      <div className="grid w-full max-w-md overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl sm:max-w-lg md:max-w-xl lg:max-w-5xl lg:grid-cols-2">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 px-4 py-8 transition-colors duration-300 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 sm:px-6 sm:py-10 lg:px-8">
+      <div className="grid w-full max-w-md overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl transition-colors duration-300 dark:border-gray-800 dark:bg-gray-900 sm:max-w-lg md:max-w-xl lg:max-w-5xl lg:grid-cols-2">
         {/* Left Side */}
         <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-teal-800 via-teal-800 to-emerald-700 p-10 text-white lg:flex">
           <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full border-[40px] border-white/5" />
@@ -158,24 +160,24 @@ const Register = () => {
                   className="h-12 w-12 object-contain transition duration-300 group-hover:scale-105"
                 />
 
-                <h1 className="text-xl font-extrabold tracking-tight text-gray-900">
+                <h1 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
                   Together
-                  <span className="text-green-600">WeCan</span>
+                  <span className="text-green-600 dark:text-green-400">WeCan</span>
                 </h1>
               </Link>
             </div>
 
             {/* Heading */}
             <div className="mb-7">
-              <p className="text-sm font-bold uppercase tracking-widest text-teal-700">
+              <p className="text-sm font-bold uppercase tracking-widest text-teal-700 dark:text-teal-400">
                 Create Account
               </p>
 
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
                 Join TogetherWeCan!
               </h2>
 
-              <p className="mt-3 text-sm leading-6 text-gray-500">
+              <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
                 Create your account and start making a difference.
               </p>
             </div>
@@ -185,12 +187,14 @@ const Register = () => {
               onSubmit={handleEmailSignUp}
               className="space-y-4"
               autoComplete="off"
-              data-lpignore="true">
+              data-lpignore="true"
+            >
               {/* Full Name */}
               <div>
                 <label
                   htmlFor="name"
-                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
                   Full Name
                 </label>
 
@@ -208,7 +212,7 @@ const Register = () => {
                     autoComplete="off"
                     required
                     data-lpignore="true"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-teal-400 dark:focus:bg-gray-800"
                   />
                 </div>
               </div>
@@ -217,7 +221,8 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
                   Email Address
                 </label>
 
@@ -238,7 +243,7 @@ const Register = () => {
                     required
                     data-lpignore="true"
                     data-1p-ignore="true"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-teal-400 dark:focus:bg-gray-800"
                   />
                 </div>
               </div>
@@ -247,7 +252,8 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="imageUrl"
-                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
                   Profile Image URL
                 </label>
 
@@ -264,7 +270,7 @@ const Register = () => {
                     placeholder="Enter your profile image URL"
                     autoComplete="off"
                     data-lpignore="true"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-teal-400 dark:focus:bg-gray-800"
                   />
                 </div>
               </div>
@@ -273,7 +279,8 @@ const Register = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="mb-2 block text-sm font-semibold text-gray-700">
+                  className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
                   Password
                 </label>
 
@@ -293,7 +300,7 @@ const Register = () => {
                     autoComplete="new-password"
                     required
                     data-lpignore="true"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-12 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-12 pr-12 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-600/10 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-teal-400 dark:focus:bg-gray-800"
                   />
 
                   <button
@@ -302,58 +309,68 @@ const Register = () => {
                     aria-label={
                       showPassword ? "Hide password" : "Show password"
                     }
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-teal-700">
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-teal-700 dark:hover:text-teal-400"
+                  >
                     {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
                   </button>
                 </div>
 
                 {/* Password Requirements */}
-                <div className="mt-3 space-y-2 rounded-xl bg-gray-50 p-3">
-                  <p className="mb-2 text-xs font-semibold text-gray-600">
+                <div className="mt-3 space-y-2 rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
+                  <p className="mb-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
                     Password must contain:
                   </p>
 
                   <div className="flex items-center gap-2">
                     {hasMinLength ? (
-                      <Check size={15} className="text-emerald-600" />
+                      <Check size={15} className="text-emerald-600 dark:text-emerald-400" />
                     ) : (
                       <X size={15} className="text-gray-400" />
                     )}
 
                     <span
                       className={`text-xs ${
-                        hasMinLength ? "text-emerald-700" : "text-gray-500"
-                      }`}>
+                        hasMinLength
+                          ? "text-emerald-700 dark:text-emerald-400"
+                          : "text-gray-500 dark:text-gray-400"
+                      }`}
+                    >
                       At least 6 characters
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {hasUppercase ? (
-                      <Check size={15} className="text-emerald-600" />
+                      <Check size={15} className="text-emerald-600 dark:text-emerald-400" />
                     ) : (
                       <X size={15} className="text-gray-400" />
                     )}
 
                     <span
                       className={`text-xs ${
-                        hasUppercase ? "text-emerald-700" : "text-gray-500"
-                      }`}>
+                        hasUppercase
+                          ? "text-emerald-700 dark:text-emerald-400"
+                          : "text-gray-500 dark:text-gray-400"
+                      }`}
+                    >
                       At least one uppercase letter (A-Z)
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {hasLowercase ? (
-                      <Check size={15} className="text-emerald-600" />
+                      <Check size={15} className="text-emerald-600 dark:text-emerald-400" />
                     ) : (
                       <X size={15} className="text-gray-400" />
                     )}
 
                     <span
                       className={`text-xs ${
-                        hasLowercase ? "text-emerald-700" : "text-gray-500"
-                      }`}>
+                        hasLowercase
+                          ? "text-emerald-700 dark:text-emerald-400"
+                          : "text-gray-500 dark:text-gray-400"
+                      }`}
+                    >
                       At least one lowercase letter (a-z)
                     </span>
                   </div>
@@ -364,7 +381,8 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={!passwordValid || isSubmitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 py-3.5 text-sm font-bold text-white shadow-md shadow-teal-700/20 transition hover:bg-teal-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 dark:bg-teal-600 dark:hover:bg-teal-500"
+              >
                 {isSubmitting ? "Creating Account..." : "Create Account"}
 
                 {!isSubmitting && <ArrowRight size={18} />}
@@ -373,20 +391,21 @@ const Register = () => {
 
             {/* Divider */}
             <div className="my-7 flex items-center gap-4">
-              <div className="h-px flex-1 bg-gray-200" />
+              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
 
-              <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
+              <span className="text-xs font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">
                 Or continue with
               </span>
 
-              <div className="h-px flex-1 bg-gray-200" />
+              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
             </div>
 
             {/* Social Registration Buttons */}
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50">
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-600 dark:hover:bg-gray-700"
+              >
                 <Image
                   src="/assets/google.png"
                   alt="Google logo"
@@ -398,7 +417,8 @@ const Register = () => {
 
               <button
                 type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50">
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3.5 text-sm font-bold text-gray-700 transition hover:border-teal-300 hover:bg-teal-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-teal-600 dark:hover:bg-gray-700"
+              >
                 <Image
                   src="/assets/github.png"
                   alt="GitHub logo"
@@ -410,17 +430,18 @@ const Register = () => {
             </div>
 
             {/* Login Link */}
-            <p className="mt-8 text-center text-sm text-gray-500">
+            <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="font-bold text-teal-700 transition hover:text-teal-900 hover:underline">
+                className="font-bold text-teal-700 transition hover:text-teal-900 hover:underline dark:text-teal-400 dark:hover:text-teal-300"
+              >
                 Login Here
               </Link>
             </p>
 
             {/* Footer */}
-            <p className="mt-8 text-center text-xs text-gray-400">
+            <p className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
               © {new Date().getFullYear()} TogetherWeCan. All rights reserved.
             </p>
           </div>
