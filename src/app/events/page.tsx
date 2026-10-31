@@ -1,7 +1,8 @@
-import { CalendarDays, Leaf } from "lucide-react";
 
-import EventsCard from "@/components/EventsCard";
+import EventsFilter from "@/components/EventsFilter";
 import { IEvent } from "@/type/Type";
+import { CalendarDays, Leaf, Plus } from "lucide-react";
+import Link from "next/link";
 
 const AllEventsPage = async () => {
   const res = await fetch("http://localhost:8000/events", {
@@ -18,40 +19,47 @@ const AllEventsPage = async () => {
     <section className="min-h-screen bg-gradient-to-b from-green-50/70 via-white to-gray-50 px-4 py-14 transition-colors duration-300 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Page Heading */}
-        <div className="mb-12 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-4 py-2 text-sm font-semibold text-green-700 shadow-sm dark:border-green-800 dark:bg-gray-900 dark:text-green-400">
-            <Leaf size={16} />
-            TogetherWeCan Community
+        <div className="mb-12">
+          {/* Community Badge */}
+          <div className="mb-5 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-4 py-2 text-sm font-semibold text-green-700 shadow-sm dark:border-green-800 dark:bg-gray-900 dark:text-green-400">
+              <Leaf size={16} />
+              TogetherWeCan Community
+            </div>
           </div>
 
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-            Upcoming{" "}
-            <span className="text-green-700 dark:text-green-400">Events</span>
-          </h1>
+          {/* Heading and Create Event Button */}
+          <div className="flex flex-col items-center justify-between gap-5 sm:flex-row">
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+              Upcoming{" "}
+              <span className="text-green-700 dark:text-green-400">
+                Events
+              </span>
+            </h1>
 
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-gray-500 dark:text-gray-400 sm:text-base">
-            Discover meaningful events, connect with passionate people, and take
-            small steps toward creating a greater impact.
+            <Link
+              href="/events/create"
+              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white shadow-md shadow-green-700/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg dark:bg-green-600 dark:hover:bg-green-500"
+            >
+              <Plus size={18} />
+              Create an Event
+            </Link>
+          </div>
+
+          {/* Description */}
+          <p className="mx-auto mt-5 max-w-2xl text-center text-sm leading-7 text-gray-500 dark:text-gray-400 sm:text-base">
+            Discover meaningful events, connect with passionate people, and
+            take small steps toward creating a greater impact.
           </p>
 
-          <div className="mx-auto mt-6 h-1 w-20 rounded-full bg-green-600 dark:bg-green-500" />
+          {/* Divider */}
+          <div className="mt-8 h-px w-full bg-gray-200 dark:bg-gray-700" />
         </div>
 
-        {/* Event Count */}
-        {events.length > 0 && (
-          <div className="mb-6 text-center">
-            <p className="text-md font-medium text-gray-500 dark:text-gray-400">
-              <span className="font-bold text-green-700 dark:text-green-400">
-                {events.length}
-              </span>{" "}
-              {events.length === 1 ? "event" : "events"} bringing people
-              together for a better tomorrow.
-            </p>
-          </div>
-        )}
-
-        {/* Events Grid */}
-        {events.length === 0 ? (
+        {/* Events Filter and Cards */}
+        {events.length > 0 ? (
+          <EventsFilter events={events} />
+        ) : (
           <div className="rounded-3xl border border-dashed border-green-200 bg-white px-6 py-20 text-center shadow-sm transition-colors duration-300 dark:border-green-900 dark:bg-gray-900">
             <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-green-50 dark:bg-green-900/30">
               <CalendarDays
@@ -69,8 +77,6 @@ const AllEventsPage = async () => {
               opportunities to make a positive impact.
             </p>
           </div>
-        ) : (
-          <EventsCard events={events} />
         )}
       </div>
     </section>

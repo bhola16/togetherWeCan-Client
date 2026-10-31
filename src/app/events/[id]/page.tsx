@@ -1,3 +1,4 @@
+import JoinEventCard from "@/components/JoinEventCard";
 import { IEvent } from "@/type/Type";
 import {
   ArrowLeft,
@@ -155,6 +156,9 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
           {/* Main Content */}
           <div className="space-y-8 lg:col-span-2">
             {/* Event Overview */}
+
+            <JoinEventCard event={event} />
+
             <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-colors hover:shadow-md dark:border-gray-800 dark:bg-gray-900 sm:p-8">
               <div className="mb-7">
                 <span className="text-xs font-extrabold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-400">
@@ -277,18 +281,18 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
                     description:
                       "Pay attention to the instructions provided by the event organizer. Following the guidelines helps ensure a smooth and organized experience for everyone.",
                   },
-                  {
-                    icon: HeartHandshake,
-                    title: "Respect Everyone",
-                    description:
-                      "Treat participants, volunteers, and organizers with kindness and respect. Be considerate of different perspectives and maintain a welcoming environment.",
-                  },
-                  {
-                    icon: Sparkles,
-                    title: "Make an Impact",
-                    description:
-                      "Participate actively and contribute wherever possible. Even small efforts, thoughtful conversations, and helpful actions can make a meaningful difference.",
-                  },
+                  // {
+                  //   icon: HeartHandshake,
+                  //   title: "Respect Everyone",
+                  //   description:
+                  //     "Treat participants, volunteers, and organizers with kindness and respect. Be considerate of different perspectives and maintain a welcoming environment.",
+                  // },
+                  // {
+                  //   icon: Sparkles,
+                  //   title: "Make an Impact",
+                  //   description:
+                  //     "Participate actively and contribute wherever possible. Even small efforts, thoughtful conversations, and helpful actions can make a meaningful difference.",
+                  // },
                 ].map((tip) => {
                   const Icon = tip.icon;
 

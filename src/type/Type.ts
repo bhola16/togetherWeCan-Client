@@ -8,3 +8,13 @@ export interface IEvent {
   description: string;
   organizerEmail: string;
 }
+
+export interface JoinedEvent {
+  _id: string;
+  eventId: string;
+  eventTitle: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  joinedAt: string;
+}

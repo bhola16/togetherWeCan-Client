@@ -290,7 +290,7 @@ const Navbar = () => {
                           <button
                             type="button"
                             onClick={handleLogout}
-                            className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
+                            className="group flex w-full items-center gap-3 rounded-lg px-4 py-3 text-md font-semibold text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
                             <LogOut
                               size={17}
                               className="transition-transform duration-200 group-hover:translate-x-0.5"
@@ -314,7 +314,7 @@ const Navbar = () => {
                 <Link
                   href="/login"
                   className="flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-700">
-                  Sign In
+                  Login
                   <ArrowRight size={16} />
                 </Link>
               )}
@@ -501,7 +501,7 @@ const Navbar = () => {
                     href="/login"
                     onClick={closeMenu}
                     className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-green-700 active:scale-[0.98]">
-                    Sign In
+                    Login
                     <ArrowRight size={16} />
                   </Link>
                 )}

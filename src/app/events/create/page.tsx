@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -114,7 +113,8 @@ const CreateEventPage = () => {
       setEventDate("");
       setEventType("");
 
-      router.refresh();
+      router.push("/events");
+      // router.refresh();
     } catch (error) {
       console.error("Create event error:", error);
 
@@ -165,9 +165,11 @@ const CreateEventPage = () => {
               <div className="space-y-2">
                 <Label
                   htmlFor="eventTitle"
-                  className="flex items-center text-gray-700 dark:text-gray-200"
-                >
-                  <Type size={16} className="mr-2 text-green-700 dark:text-green-400" />
+                  className="flex items-center text-gray-700 dark:text-gray-200">
+                  <Type
+                    size={16}
+                    className="mr-2 text-green-700 dark:text-green-400"
+                  />
                   Event Title
                   <span className="ml-1 text-red-500">*</span>
                 </Label>
@@ -188,17 +190,18 @@ const CreateEventPage = () => {
                 <div className="space-y-2">
                   <Label
                     htmlFor="eventType"
-                    className="flex items-center text-gray-700 dark:text-gray-200"
-                  >
-                    <Tag size={16} className="mr-2 text-green-700 dark:text-green-400" />
+                    className="flex items-center text-gray-700 dark:text-gray-200">
+                    <Tag
+                      size={16}
+                      className="mr-2 text-green-700 dark:text-green-400"
+                    />
                     Event Type
                     <span className="ml-1 text-red-500">*</span>
                   </Label>
 
                   <Select
                     value={eventType}
-                    onValueChange={(value) => setEventType(value ?? "")}
-                  >
+                    onValueChange={(value) => setEventType(value ?? "")}>
                     <SelectTrigger className="h-11 w-full border-gray-200 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                       <SelectValue placeholder="Select event type" />
                     </SelectTrigger>
@@ -208,8 +211,7 @@ const CreateEventPage = () => {
                         <SelectItem
                           key={type}
                           value={type}
-                          className="focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-700 dark:focus:text-white"
-                        >
+                          className="focus:bg-gray-100 focus:text-gray-900 dark:focus:bg-gray-700 dark:focus:text-white">
                           {type}
                         </SelectItem>
                       ))}
@@ -221,8 +223,7 @@ const CreateEventPage = () => {
                 <div className="space-y-2">
                   <Label
                     htmlFor="eventDate"
-                    className="flex items-center text-gray-700 dark:text-gray-200"
-                  >
+                    className="flex items-center text-gray-700 dark:text-gray-200">
                     <CalendarDays
                       size={16}
                       className="mr-2 text-green-700 dark:text-green-400"
@@ -259,9 +260,11 @@ const CreateEventPage = () => {
               <div className="space-y-2">
                 <Label
                   htmlFor="location"
-                  className="flex items-center text-gray-700 dark:text-gray-200"
-                >
-                  <MapPin size={16} className="mr-2 text-green-700 dark:text-green-400" />
+                  className="flex items-center text-gray-700 dark:text-gray-200">
+                  <MapPin
+                    size={16}
+                    className="mr-2 text-green-700 dark:text-green-400"
+                  />
                   Location / Venue
                   <span className="ml-1 text-red-500">*</span>
                 </Label>
@@ -280,9 +283,11 @@ const CreateEventPage = () => {
               <div className="space-y-2">
                 <Label
                   htmlFor="imageUrl"
-                  className="flex items-center text-gray-700 dark:text-gray-200"
-                >
-                  <ImageIcon size={16} className="mr-2 text-green-700 dark:text-green-400" />
+                  className="flex items-center text-gray-700 dark:text-gray-200">
+                  <ImageIcon
+                    size={16}
+                    className="mr-2 text-green-700 dark:text-green-400"
+                  />
                   Thumbnail Image URL
                   <span className="ml-1 text-red-500">*</span>
                 </Label>
@@ -301,9 +306,11 @@ const CreateEventPage = () => {
               <div className="space-y-2">
                 <Label
                   htmlFor="description"
-                  className="flex items-center text-gray-700 dark:text-gray-200"
-                >
-                  <FileText size={16} className="mr-2 text-green-700 dark:text-green-400" />
+                  className="flex items-center text-gray-700 dark:text-gray-200">
+                  <FileText
+                    size={16}
+                    className="mr-2 text-green-700 dark:text-green-400"
+                  />
                   Event Description
                   <span className="ml-1 text-red-500">*</span>
                 </Label>
@@ -322,9 +329,11 @@ const CreateEventPage = () => {
               <div className="space-y-2">
                 <Label
                   htmlFor="organizerEmail"
-                  className="flex items-center text-gray-700 dark:text-gray-200"
-                >
-                  <Mail size={16} className="mr-2 text-green-700 dark:text-green-400" />
+                  className="flex items-center text-gray-700 dark:text-gray-200">
+                  <Mail
+                    size={16}
+                    className="mr-2 text-green-700 dark:text-green-400"
+                  />
                   Organizer Email Address
                   <span className="ml-1 text-red-500">*</span>
                 </Label>
@@ -346,8 +355,7 @@ const CreateEventPage = () => {
                   disabled={
                     !eventDate || isInvalidDate || !eventType || isSubmitting
                   }
-                  className="h-12 w-full bg-green-700 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
-                >
+                  className="h-12 w-full bg-green-700 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50">
                   <Send size={17} className="mr-2" />
                   {isSubmitting ? "Publishing..." : "Publish Event"}
                 </Button>
