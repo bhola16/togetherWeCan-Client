@@ -35,6 +35,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+const API_URL = (
+  process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
+).replace(/\/$/, "");
+
 const types = [
   "Environmental",
   "Education",
@@ -54,18 +58,20 @@ const CreateEventPage = () => {
   const [eventType, setEventType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get today's date in local timezone
+  // Get today's date in local timezone.
   const today = new Date();
 
   const minDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
     .toISOString()
     .split("T")[0];
 
-  // Check whether the selected date is today or in the past
+  // Event date must be after today.
   const isInvalidDate = eventDate !== "" && eventDate <= minDate;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
 
     if (!eventDate || isInvalidDate) {
       toast.error("Please select a valid future event date.");
@@ -83,7 +89,7 @@ const CreateEventPage = () => {
     const eventData = {
       title: formData.get("eventTitle"),
       eventType,
-      eventDate: formData.get("eventDate"),
+      eventDate,
       location: formData.get("location"),
       imageUrl: formData.get("imageUrl"),
       description: formData.get("description"),
@@ -93,7 +99,7 @@ const CreateEventPage = () => {
     try {
       setIsSubmitting(true);
 
-      const res = await fetch("http://localhost:8000/create-events", {
+      const res = await fetch(`${API_URL}/create-events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +107,7 @@ const CreateEventPage = () => {
         body: JSON.stringify(eventData),
       });
 
-      const result = await res.json();
+      const result = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         throw new Error(result.message || "Failed to create event.");
@@ -114,7 +120,6 @@ const CreateEventPage = () => {
       setEventType("");
 
       router.push("/events");
-      // router.refresh();
     } catch (error) {
       console.error("Create event error:", error);
 
@@ -202,7 +207,9 @@ const CreateEventPage = () => {
                   <Select
                     value={eventType}
                     onValueChange={(value) => setEventType(value ?? "")}>
-                    <SelectTrigger className="h-11 w-full border-gray-200 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                    <SelectTrigger
+                      id="eventType"
+                      className="h-11 w-full border-gray-200 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                       <SelectValue placeholder="Select event type" />
                     </SelectTrigger>
 
@@ -250,7 +257,7 @@ const CreateEventPage = () => {
                     </p>
                   ) : (
                     <p className="text-xs text-gray-400 dark:text-gray-500">
-                      Select a future date.
+                      Select a date after today.
                     </p>
                   )}
                 </div>
@@ -321,7 +328,7 @@ const CreateEventPage = () => {
                   rows={5}
                   placeholder="Describe your event, its purpose, activities, and how people can participate..."
                   required
-                  className="min-h-32 resize-y border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus-visible:ring-green-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+                  className="min-h-20 max-h-32 resize-y border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus-visible:ring-green-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
                 />
               </div>
 

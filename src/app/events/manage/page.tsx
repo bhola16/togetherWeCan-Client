@@ -121,7 +121,14 @@ const ManageMyEvents = () => {
       </div>
     );
   }
-
+  // Update the event in the local state after editing.
+  const handleUpdateEvent = (updatedEvent: IEvent) => {
+    setEvents((previousEvents) =>
+      previousEvents.map((event) =>
+        event._id === updatedEvent._id ? updatedEvent : event,
+      ),
+    );
+  };
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl">
@@ -164,8 +171,8 @@ const ManageMyEvents = () => {
             </h2>
 
             <p className="mx-auto mt-2 max-w-md text-gray-500">
-              You haven&apos;t created any events yet. Start an event and bring your
-              community together.
+              You haven&apos;t created any events yet. Start an event and bring
+              your community together.
             </p>
 
             <Link
@@ -183,6 +190,7 @@ const ManageMyEvents = () => {
                 event={event}
                 onDelete={handleDeleteEvent}
                 deletingId={deletingId}
+                onUpdated={handleUpdateEvent}
               />
             ))}
           </div>

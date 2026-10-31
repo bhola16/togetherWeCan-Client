@@ -1,7 +1,5 @@
-
 "use client";
 
-import { IEvent } from "@/type/Type";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,34 +12,35 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  CalendarDays,
-  CheckCircle2,
-  Edit,
-  MapPin,
-  Trash2,
-} from "lucide-react";
+import { IEvent } from "@/type/Type";
+import { CalendarDays, CheckCircle2, MapPin, Trash2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import EditMyEventDialog from "./EditMyEventDialog";
 
 interface ManageMyEventCardProps {
   event: IEvent;
   onDelete: (eventId: string) => void;
   deletingId: string | null;
+  onUpdated: (updatedEvent: IEvent) => void;
 }
 
 const ManageMyEventCard = ({
   event,
   onDelete,
   deletingId,
+  onUpdated,
 }: ManageMyEventCardProps) => {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900">
       {/* Event Image */}
       <div className="group relative h-56 overflow-hidden">
-        <img
+        <Image
           src={event.imageUrl}
           alt={event.title}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -71,10 +70,7 @@ const ManageMyEventCard = ({
 
         <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-2">
-            <CalendarDays
-              size={17}
-              className="shrink-0 text-green-600"
-            />
+            <CalendarDays size={17} className="shrink-0 text-green-600" />
             <span>{event.eventDate}</span>
           </div>
 
@@ -88,37 +84,33 @@ const ManageMyEventCard = ({
         <div className="mt-5 grid grid-cols-3 gap-2 border-t border-gray-100 pt-4 dark:border-gray-700">
           <Link
             href={`/events/${event._id}`}
-            className="col-span-1 flex items-center justify-center rounded-lg bg-gray-100 px-2 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-          >
+            className="col-span-1 flex items-center justify-center rounded-lg bg-gray-100 px-2 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
             View Details
           </Link>
 
-          <Link
-            href={`/events/edit/${event._id}`}
-            className="flex items-center justify-center gap-1 rounded-lg bg-blue-50 px-2 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
-          >
-            <Edit size={15} />
-            Edit
-          </Link>
+          {/* Edit Event */}
+          <EditMyEventDialog event={event} onUpdated={onUpdated} />
 
+          {/* Delete Event */}
           <AlertDialog>
             <AlertDialogTrigger
-              render={<Button variant="outline" />}
-              className="border-red-400 text-red-700 hover:bg-red-50"
-            >
-              <Trash2 size={15} />
-              Delete
-            </AlertDialogTrigger>
+              render={
+                <Button
+                  variant="outline"
+                  className="flex w-full items-center justify-center gap-1 border-red-400 px-2 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950">
+                  <Trash2 size={15} />
+                  Delete
+                </Button>
+              }
+            />
 
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Are you absolutely sure?
-                </AlertDialogTitle>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
 
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently
-                  delete your event from the server.
+                  This action cannot be undone. This will permanently delete
+                  your event from the server.
                 </AlertDialogDescription>
               </AlertDialogHeader>
 
@@ -128,8 +120,7 @@ const ManageMyEventCard = ({
                 <AlertDialogAction
                   onClick={() => onDelete(event._id)}
                   disabled={deletingId === event._id}
-                  className="bg-red-600 text-white hover:bg-red-700"
-                >
+                  className="bg-red-600 text-white hover:bg-red-700">
                   {deletingId === event._id ? "Deleting..." : "Continue"}
                 </AlertDialogAction>
               </AlertDialogFooter>
