@@ -3,8 +3,12 @@ import { IEvent } from "@/type/Type";
 import { CalendarDays, Leaf, Plus } from "lucide-react";
 import Link from "next/link";
 
+const API_URL = (
+  process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
+).replace(/\/$/, "");
+
 const AllEventsPage = async () => {
-  const res = await fetch("http://localhost:8000/events", {
+  const res = await fetch(`${API_URL}/events`, {
     cache: "no-store",
   });
 
@@ -12,9 +16,20 @@ const AllEventsPage = async () => {
     throw new Error("Failed to fetch events");
   }
 
-  const events: IEvent[] = await res.json();
+  const allEvents: IEvent[] = await res.json();
 
-  
+  // Get today's date at midnight (local time).
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Show only today's and future events.
+  const events = allEvents.filter((event) => {
+    if (!event.eventDate) return false;
+
+    const eventDate = new Date(`${event.eventDate}T00:00:00`);
+
+    return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
+  });
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-green-50/70 via-white to-gray-50 px-4 py-14 transition-colors duration-300 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
@@ -32,8 +47,11 @@ const AllEventsPage = async () => {
           {/* Heading and Create Event Button */}
           <div className="flex flex-col items-center justify-between gap-5 sm:flex-row">
             <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-              Upcoming{" "}
-              <span className="text-green-700 dark:text-green-400">Events</span>
+              Upcoming
+              <span className="text-green-700 dark:text-green-400">
+                {" "}
+                Events
+              </span>
             </h1>
 
             <Link
@@ -67,11 +85,11 @@ const AllEventsPage = async () => {
             </div>
 
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              No Events Found
+              No Upcoming Events
             </h2>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-500 dark:text-gray-400">
-              There are no events available right now. Check back soon for new
+              There are no upcoming events right now. Check back soon for new
               opportunities to make a positive impact.
             </p>
           </div>

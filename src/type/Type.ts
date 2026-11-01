@@ -13,8 +13,11 @@ export interface JoinedEvent {
   _id: string;
   eventId: string;
   eventTitle: string;
+  eventDate: string;
   userId: string;
   userName: string;
   userEmail: string;
-  joinedAt: string;
+  userImage?: string;
+  joinedAt: string | null;
+  event: IEvent | null;
 }

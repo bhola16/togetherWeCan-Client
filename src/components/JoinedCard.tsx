@@ -1,83 +1,65 @@
 "use client";
 
-import { IEvent } from "@/type/Type";
+import { IEvent, JoinedEvent } from "@/type/Type";
 import { ArrowUpRight, CalendarDays, CheckCircle2, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Card, CardFooter } from "./ui/card";
 
-interface JoinedEvent {
-  _id: string;
-  eventId: string;
-  eventTitle: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  joinedAt: string;
-}
+const formatDate = (date: string) => {
+  if (!date) return "Date not available";
 
-const API_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
-).replace(/\/$/, "");
+  const parsedDate = new Date(`${date.slice(0, 10)}T00:00:00Z`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "Date not available";
+  }
+
+  return parsedDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+};
+
+const formatJoinedDate = (date: string | null) => {
+  if (!date) return "Date not available";
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "Date not available";
+  }
+
+  return parsedDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
 
 const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
-  const [event, setEvent] = useState<IEvent | null>(null);
-  const [loading, setLoading] = useState(true);
+  const event: IEvent | null = joinedEvent.event;
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchEvent = async () => {
-      try {
-        const res = await fetch(`${API_URL}/events/${joinedEvent.eventId}`, {
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch event.");
-        }
-
-        const data: IEvent = await res.json();
-
-        if (!cancelled) {
-          setEvent(data);
-        }
-      } catch (error) {
-        console.error("Fetch event error:", error);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void fetchEvent();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [joinedEvent.eventId]);
-
-  if (loading) {
+  if (!event) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <div className="h-56 animate-pulse bg-gray-200 dark:bg-gray-800" />
-        <div className="space-y-4 p-5">
-          <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
-          <div className="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
-          <div className="h-4 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
-          <div className="h-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
-        </div>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+        <h2 className="font-semibold text-gray-800 dark:text-gray-200">
+          {joinedEvent.eventTitle || "Event unavailable"}
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          This event may have been deleted or is no longer available.
+        </p>
       </div>
     );
   }
 
-  if (!event) return null;
-
   return (
-    <article className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900 dark:hover:border-emerald-900">
       {/* Image Section */}
-      <div className="relative h-56 overflow-hidden">
+      <div className="relative h-48 shrink-0 overflow-hidden sm:h-52">
         <Image
           src={event.imageUrl}
           alt={event.title}
@@ -86,8 +68,7 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
           sizes="(max-width: 768px) 100vw, 33vw"
         />
 
-        {/* Dark Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/20" />
 
         {/* Event Type */}
         <div className="absolute left-4 top-4">
@@ -97,76 +78,102 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
         </div>
 
         {/* Joined Status */}
-        <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md">
+        <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md">
           <CheckCircle2 size={14} />
           Joined
         </div>
 
         {/* Image Bottom Content */}
         <div className="absolute bottom-4 left-5 right-5">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-green-300">
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-emerald-300">
             Community Event
           </p>
 
-          <h2 className="line-clamp-2 text-xl font-bold text-white">
+          <h2 className="line-clamp-2 text-xl font-bold leading-snug text-white">
             {event.title}
           </h2>
         </div>
       </div>
 
       {/* Information Section */}
-      <div className="p-5">
-        <p className="mb-5 line-clamp-2 text-sm leading-6 text-gray-600 dark:text-gray-400">
-          {event.description}
-        </p>
+      <Card className="flex flex-1 flex-col p-4 sm:p-5">
+        {/* Description */}
+        <div className="mb-4">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            About Event
+          </p>
+
+          <p className="line-clamp-2 text-sm leading-5 text-gray-600 dark:text-gray-400">
+            {event.description}
+          </p>
+        </div>
 
         {/* Event Details */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-600 dark:bg-green-950/50">
-              <CalendarDays size={18} />
+        <div className="space-y-2">
+          {/* Event Date */}
+          <div className="flex items-center gap-3 rounded-lg border border-gray-100 p-2 dark:border-gray-800">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+              <CalendarDays size={16} />
             </div>
 
-            <div>
-              <p className="text-xs text-gray-400">Event Date</p>
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {new Date(event.eventDate).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
+            <div className="min-w-0">
+              <p className="text-[11px] font-medium text-gray-400">
+                Event Date
+              </p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                {formatDate(event.eventDate)}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-600 dark:bg-green-950/50">
-              <MapPin size={18} />
+          {/* Location */}
+          <div className="flex items-center gap-3 rounded-lg border border-gray-100 p-2 dark:border-gray-800">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+              <MapPin size={16} />
             </div>
 
             <div className="min-w-0">
-              <p className="text-xs text-gray-400">Location</p>
-              <p className="line-clamp-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+              <p className="text-[11px] font-medium text-gray-400">Location</p>
+              <p className="line-clamp-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                 {event.location}
               </p>
             </div>
           </div>
+
+          {/* Joined Date */}
+          <div className="flex items-center gap-3 rounded-lg border border-gray-100 p-2 dark:border-gray-800">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+              <CheckCircle2 size={16} />
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-[11px] font-medium text-gray-400">Joined On</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                {formatJoinedDate(joinedEvent.joinedAt)}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-5 border-t border-gray-100 pt-4 dark:border-gray-800">
+        {/* Footer - Unchanged */}
+        <CardFooter className="-mx-5 mt-1 flex items-center justify-center gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2 transition-colors duration-300 hover:bg-emerald-50 dark:border-gray-800 dark:bg-gray-800/50 dark:hover:bg-emerald-950/30">
           <Link
             href={`/events/${event._id}`}
-            className="flex w-full items-center justify-between rounded-xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 transition-all duration-200 hover:bg-green-600 hover:text-white dark:bg-green-950/40 dark:text-green-400 dark:hover:bg-green-600 dark:hover:text-white">
-            <span>View Event Details</span>
+            className="text-sm font-bold text-emerald-700 transition-all duration-300 hover:tracking-wide hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300">
+            View Event
+          </Link>
 
+          <Link
+            href={`/events/${event._id}`}
+            aria-label={`View ${event.title}`}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm transition-all duration-300 hover:rotate-45 hover:scale-110 hover:bg-emerald-700 hover:shadow-md hover:shadow-emerald-600/30 active:scale-95">
             <ArrowUpRight
-              size={19}
-              className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              size={17}
+              className="transition-transform duration-300"
             />
           </Link>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </article>
   );
 };

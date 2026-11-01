@@ -186,7 +186,7 @@ const EditMyEventDialog = ({ event, onUpdated }: EditMyEventDialogProps) => {
         render={
           <Button
             variant="outline"
-            className="flex w-full items-center justify-center gap-1 rounded-lg border-0 bg-blue-50 px-2 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
+            className="h-10 w-full min-w-0 gap-1 rounded-lg border-blue-200 bg-blue-50/50 px-2 text-xs font-semibold text-blue-700 transition-all hover:border-blue-300 hover:bg-blue-100 hover:text-blue-800 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-400 dark:hover:bg-blue-950 sm:text-sm">
             <Edit size={15} />
             Edit
           </Button>

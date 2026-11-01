@@ -1,4 +1,3 @@
-
 "use client";
 
 import EventsCard from "@/components/EventsCard";
@@ -54,8 +53,7 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
                 selectedType === type
                   ? "border-green-700 bg-green-700 text-white shadow-md shadow-green-700/20 dark:border-green-500 dark:bg-green-600"
                   : "border-gray-200 bg-white text-gray-600 hover:border-green-400 hover:bg-green-50 hover:text-green-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-green-600 dark:hover:bg-gray-800 dark:hover:text-green-400"
-              }`}
-            >
+              }`}>
               {type}
             </button>
           ))}
@@ -82,8 +80,7 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
               type="button"
               onClick={() => setSearchQuery("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer rounded-full p-1 text-gray-400 transition hover:bg-green-50 hover:text-green-700 dark:hover:bg-gray-800 dark:hover:text-green-400"
-              aria-label="Clear search"
-            >
+              aria-label="Clear search">
               <X size={17} />
             </button>
           )}
@@ -107,10 +104,7 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
       ) : (
         <div className="rounded-3xl border border-dashed border-green-200 bg-white px-6 py-16 text-center shadow-sm dark:border-green-900 dark:bg-gray-900">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-50 dark:bg-green-900/30">
-            <Search
-              size={30}
-              className="text-green-600 dark:text-green-400"
-            />
+            <Search size={30} className="text-green-600 dark:text-green-400" />
           </div>
 
           <h2 className="text-xl font-bold text-gray-800 dark:text-white">
@@ -129,8 +123,7 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
               setSelectedType("All");
               setSearchQuery("");
             }}
-            className="mt-6 cursor-pointer rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800 dark:bg-green-600 dark:hover:bg-green-500"
-          >
+            className="mt-6 cursor-pointer rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800 dark:bg-green-600 dark:hover:bg-green-500">
             Clear Filters
           </button>
         </div>

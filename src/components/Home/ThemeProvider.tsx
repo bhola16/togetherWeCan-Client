@@ -2,18 +2,13 @@
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
-const ThemeProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <NextThemesProvider
       attribute="class"
       defaultTheme="light"
       enableSystem={false}
-      disableTransitionOnChange
-    >
+      disableTransitionOnChange>
       {children}
     </NextThemesProvider>
   );

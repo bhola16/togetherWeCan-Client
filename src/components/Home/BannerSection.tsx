@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -78,8 +77,7 @@ const BannerSection = () => {
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/events"
-                className="group inline-flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3.5 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl active:scale-95"
-              >
+                className="group inline-flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3.5 font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-green-800 hover:shadow-xl active:scale-95">
                 Explore Upcoming Events
                 <ArrowRight
                   size={18}
@@ -89,8 +87,7 @@ const BannerSection = () => {
 
               <Link
                 href="/events/create"
-                className="group inline-flex items-center gap-2 rounded-lg border border-green-700 px-6 py-3.5 font-semibold text-green-800 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-lg active:scale-95 dark:border-green-500 dark:text-green-400 dark:hover:bg-green-950"
-              >
+                className="group inline-flex items-center gap-2 rounded-lg border border-green-700 px-6 py-3.5 font-semibold text-green-800 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-lg active:scale-95 dark:border-green-500 dark:text-green-400 dark:hover:bg-green-950">
                 <PlusCircle
                   size={18}
                   className="transition-transform duration-300 group-hover:rotate-90"
@@ -168,8 +165,7 @@ const BannerSection = () => {
                   key={stat.label}
                   href={stat.href}
                   aria-label={`${stat.label}: ${stat.value}. ${stat.description}`}
-                  className="group flex items-center gap-4 rounded-xl border border-green-200 bg-white/70 px-5 py-4 transition-all duration-300 hover:-translate-y-1 hover:border-green-500 hover:bg-white hover:shadow-lg active:scale-[0.98] dark:border-green-900 dark:bg-gray-900/80 dark:hover:border-green-600 dark:hover:bg-gray-800"
-                >
+                  className="group flex items-center gap-4 rounded-xl border border-green-200 bg-white/70 px-5 py-4 transition-all duration-300 hover:-translate-y-1 hover:border-green-500 hover:bg-white hover:shadow-lg active:scale-[0.98] dark:border-green-900 dark:bg-gray-900/80 dark:hover:border-green-600 dark:hover:bg-gray-800">
                   {/* Statistic Icon */}
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:bg-green-700 group-hover:text-white dark:bg-green-900/50 dark:text-green-400">
                     <Icon size={24} />

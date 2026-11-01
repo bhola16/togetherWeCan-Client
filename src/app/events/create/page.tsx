@@ -36,7 +36,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 const API_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
+  process.env.NEXT_PUBLIC_SERVER_API_URL || 'undefined'
 ).replace(/\/$/, "");
 
 const types = [
@@ -68,7 +68,7 @@ const CreateEventPage = () => {
   // Event date must be after today.
   const isInvalidDate = eventDate !== "" && eventDate <= minDate;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (isSubmitting) return;

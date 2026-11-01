@@ -1,4 +1,3 @@
-
 import { Archive, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -31,8 +30,7 @@ const PastEvents = () => {
 
           <Link
             href="/events"
-            className="group inline-flex shrink-0 items-center gap-2 font-bold text-green-700 transition hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-          >
+            className="group inline-flex shrink-0 items-center gap-2 font-bold text-green-700 transition hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
             Explore More Events
             <ArrowRight
               size={18}

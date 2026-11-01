@@ -12,6 +12,22 @@ const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
 ).replace(/\/$/, "");
 
+// Convert event date to timestamp for sorting.
+const getEventTimestamp = (date: string | undefined) => {
+  if (!date) return Number.MAX_SAFE_INTEGER;
+
+  const timestamp = new Date(`${date.slice(0, 10)}T00:00:00`).getTime();
+
+  return Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
+};
+
+// Sort events by date (earliest first).
+const sortEventsByDate = (events: IEvent[]) => {
+  return [...events].sort(
+    (a, b) => getEventTimestamp(a.eventDate) - getEventTimestamp(b.eventDate),
+  );
+};
+
 const ManageMyEvents = () => {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
@@ -42,14 +58,17 @@ const ManageMyEvents = () => {
 
         const data: IEvent[] = await res.json();
 
-        // Show only events created by the logged-in user.
+        // Filter events created by the logged-in user.
         const myEvents = data.filter(
           (event) =>
             event.organizerEmail?.toLowerCase() === user.email.toLowerCase(),
         );
 
+        // Sort events by event date.
+        const sortedEvents = sortEventsByDate(myEvents);
+
         if (!cancelled) {
-          setEvents(myEvents);
+          setEvents(sortedEvents);
         }
       } catch (error) {
         console.error("Fetch my events error:", error);
@@ -98,6 +117,17 @@ const ManageMyEvents = () => {
     }
   };
 
+  // Update event and maintain date sorting.
+  const handleUpdateEvent = (updatedEvent: IEvent) => {
+    setEvents((previousEvents) => {
+      const updatedEvents = previousEvents.map((event) =>
+        event._id === updatedEvent._id ? updatedEvent : event,
+      );
+
+      return sortEventsByDate(updatedEvents);
+    });
+  };
+
   if (isPending) return null;
 
   if (!user) {
@@ -121,14 +151,7 @@ const ManageMyEvents = () => {
       </div>
     );
   }
-  // Update the event in the local state after editing.
-  const handleUpdateEvent = (updatedEvent: IEvent) => {
-    setEvents((previousEvents) =>
-      previousEvents.map((event) =>
-        event._id === updatedEvent._id ? updatedEvent : event,
-      ),
-    );
-  };
+
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl">

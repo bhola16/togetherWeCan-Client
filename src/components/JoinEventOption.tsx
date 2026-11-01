@@ -15,7 +15,7 @@ const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
 ).replace(/\/$/, "");
 
-const JoinEventCard = ({ event }: JoinEventCardProps) => {
+const JoinEventOption = ({ event }: JoinEventCardProps) => {
   const { data: session, isPending } = authClient.useSession();
 
   const user = session?.user;
@@ -97,6 +97,7 @@ const JoinEventCard = ({ event }: JoinEventCardProps) => {
       const participantData = {
         eventId: event._id,
         eventTitle: event.title,
+        eventDate: event.eventDate,
         userId: user.id,
         userName: user.name,
         userEmail: user.email,
@@ -190,4 +191,4 @@ const JoinEventCard = ({ event }: JoinEventCardProps) => {
   );
 };
 
-export default JoinEventCard;
+export default JoinEventOption;

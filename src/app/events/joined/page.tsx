@@ -17,18 +17,22 @@ const JoinedPage = () => {
   const user = session?.user;
 
   const [joinedEvents, setJoinedEvents] = useState<JoinedEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (isPending) return;
 
     if (!user) {
       setJoinedEvents([]);
+      setLoading(false);
       return;
     }
 
     let cancelled = false;
 
     const fetchJoinedEvents = async () => {
+      setLoading(true);
+
       try {
         const res = await fetch(`${API_URL}/myjoinedevents/${user.id}`, {
           cache: "no-store",
@@ -40,17 +44,16 @@ const JoinedPage = () => {
 
         const data: JoinedEvent[] = await res.json();
 
-        // Sort events by date (nearest upcoming event first).
+        // Sort using the latest event date from the event document.
+        // Events without a valid date appear at the end.
         const sortedEvents = [...data].sort((a, b) => {
-          const dateA =
-            "eventDate" in a && typeof a.eventDate === "string"
-              ? new Date(a.eventDate).getTime()
-              : Number.MAX_SAFE_INTEGER;
+          const dateA = a.event?.eventDate
+            ? new Date(a.event.eventDate).getTime()
+            : Number.MAX_SAFE_INTEGER;
 
-          const dateB =
-            "eventDate" in b && typeof b.eventDate === "string"
-              ? new Date(b.eventDate).getTime()
-              : Number.MAX_SAFE_INTEGER;
+          const dateB = b.event?.eventDate
+            ? new Date(b.event.eventDate).getTime()
+            : Number.MAX_SAFE_INTEGER;
 
           const safeDateA = Number.isNaN(dateA)
             ? Number.MAX_SAFE_INTEGER
@@ -71,6 +74,10 @@ const JoinedPage = () => {
 
         if (!cancelled) {
           toast.error("Unable to load your joined events.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
         }
       }
     };
@@ -138,8 +145,25 @@ const JoinedPage = () => {
           </p>
         </div>
 
-        {/* Empty State */}
-        {joinedEvents.length === 0 ? (
+        {/* Loading State */}
+        {loading ? (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="animate-pulse overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-900">
+                <div className="h-56 bg-gray-200 dark:bg-gray-800" />
+
+                <div className="space-y-4 p-5">
+                  <div className="h-5 w-3/4 rounded bg-gray-200 dark:bg-gray-800" />
+                  <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-800" />
+                  <div className="h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-800" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : joinedEvents.length === 0 ? (
+          /* Empty State */
           <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-900">
             <Users size={48} className="mx-auto mb-4 text-gray-400" />
 
@@ -148,12 +172,12 @@ const JoinedPage = () => {
             </h2>
 
             <p className="mx-auto mt-2 max-w-md text-gray-500">
-              You haven't joined any events yet. Explore upcoming events and
-              become part of something meaningful.
+              You haven&apos;t joined any events yet. Explore upcoming events
+              and become part of something meaningful.
             </p>
 
             <Link
-              href="/upcoming-events"
+              href="/events"
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700">
               Explore Events
               <ArrowRight size={18} />
