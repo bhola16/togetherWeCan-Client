@@ -9,7 +9,7 @@ import { Card, CardFooter } from "./ui/card";
 const formatDate = (date: string) => {
   if (!date) return "Date not available";
 
-  const parsedDate = new Date(`${date.slice(0, 10)}T00:00:00Z`);
+  const parsedDate = new Date(`${date.slice(0, 10)}T00:00:00`);
 
   if (Number.isNaN(parsedDate.getTime())) {
     return "Date not available";
@@ -19,7 +19,6 @@ const formatDate = (date: string) => {
     day: "numeric",
     month: "long",
     year: "numeric",
-    timeZone: "UTC",
   });
 };
 
@@ -39,18 +38,18 @@ const formatJoinedDate = (date: string | null) => {
   });
 };
 
-// Determine event status based on its date.
+// Determine event status based on the visitor's local date.
 const getEventStatus = (date: string) => {
   if (!date) return "Joined";
 
-  const eventDate = new Date(`${date.slice(0, 10)}T00:00:00Z`);
+  const eventDate = new Date(`${date.slice(0, 10)}T00:00:00`);
 
   if (Number.isNaN(eventDate.getTime())) {
     return "Joined";
   }
 
   const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
 
   return eventDate < today ? "Completed" : "Upcoming";
 };
@@ -88,13 +87,6 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/20" />
 
-        {/* Event Type */}
-        <div className="absolute left-4 top-4">
-          <span className="rounded-full border border-white/30 bg-white/90 px-3 py-1.5 text-xs font-semibold text-gray-800 shadow-sm backdrop-blur-md">
-            {event.eventType}
-          </span>
-        </div>
-
         {/* Event Status */}
         <div
           className={`absolute right-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white shadow-md ${
@@ -110,11 +102,11 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
 
         {/* Image Bottom Content */}
         <div className="absolute bottom-4 left-5 right-5">
-          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-emerald-300">
-            Community Event
-          </p>
+          <span className="rounded-full border border-white/30 bg-white/90 px-3 py-1.5 text-xs font-semibold text-gray-800 shadow-sm backdrop-blur-md">
+            {event.eventType}
+          </span>
 
-          <h2 className="line-clamp-2 text-xl font-bold leading-snug text-white">
+          <h2 className="mt-2 line-clamp-2 text-xl font-bold leading-snug text-emerald-300">
             {event.title}
           </h2>
         </div>

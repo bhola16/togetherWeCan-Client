@@ -44,7 +44,7 @@ const EventsCard = ({ events }: EventsCardProps) => {
                 size={12}
                 className="transition-transform duration-300 group-hover:rotate-12"
               />
-              {event.eventType}
+              {event.eventType } 
             </span>
 
             {/* Event Title and Date */}

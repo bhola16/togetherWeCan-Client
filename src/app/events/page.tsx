@@ -38,7 +38,7 @@ const AllEventsPage = async () => {
     );
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-green-50/70 via-white to-gray-50 px-4 py-14 transition-colors duration-300 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-linear-to-b from-green-50/70 via-white to-gray-50 px-4 py-14 transition-colors duration-300 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Page Heading */}
         <div className="mb-12">
