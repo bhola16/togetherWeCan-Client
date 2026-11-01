@@ -21,3 +21,13 @@ export interface JoinedEvent {
   joinedAt: string | null;
   event: IEvent | null;
 }
+
+export interface IPastEvent {
+  _id: string;
+  title: string;
+  eventType: string;
+  eventDate: string;
+  location: string;
+  imageUrl: string;
+  description: string;
+}

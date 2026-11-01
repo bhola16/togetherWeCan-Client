@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { IPastEvent } from "@/type/Type";
 import {
   Archive,
   ArrowRight,
@@ -12,15 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-interface IPastEvent {
-  _id: string;
-  title: string;
-  eventType: string;
-  eventDate: string;
-  location: string;
-  imageUrl: string;
-  description: string;
-}
+
 
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
