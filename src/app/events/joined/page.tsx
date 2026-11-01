@@ -34,18 +34,34 @@ const JoinedPage = () => {
       setLoading(true);
 
       try {
-        const res = await fetch(`${API_URL}/myjoinedevents/${user.id}`, {
+        const url = `${API_URL}/myjoinedevents/${user.id}`;
+
+        console.log("Fetching joined events from:", url);
+
+        const res = await fetch(url, {
           cache: "no-store",
         });
 
+        const responseText = await res.text();
+
+        console.log("Response status:", res.status);
+        console.log("Response body:", responseText);
+
         if (!res.ok) {
-          throw new Error("Failed to fetch joined events.");
+          throw new Error(
+            `Failed to fetch joined events: ${res.status} - ${responseText}`,
+          );
         }
 
-        const data: JoinedEvent[] = await res.json();
+        const data: JoinedEvent[] = JSON.parse(responseText);
+
+        // Ignore participant records whose events have been deleted.
+        const availableEvents = data.filter((joinedEvent) =>
+          Boolean(joinedEvent.event),
+        );
 
         if (!cancelled) {
-          setJoinedEvents(data);
+          setJoinedEvents(availableEvents);
         }
       } catch (error) {
         console.error("Fetch joined events error:", error);
