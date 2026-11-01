@@ -1,16 +1,16 @@
 import BannerSection from "@/components/Home/BannerSection";
+import NextEventsHome from "@/components/Home/NextEventsHome";
 import OurFeaturesPage from "@/components/Home/OurFeatures";
-import PastEvents from "@/components/Home/PastEvents";
+import PastEventsHome from "@/components/Home/PastEventsHome";
 import Subscribe from "@/components/Home/Subscribe";
-import UpCommingInititives from "@/components/Home/UpCommingInititives";
 
 export default function Home() {
   return (
     <div>
       <BannerSection />
       <OurFeaturesPage />
-      <UpCommingInititives />
-      <PastEvents />
+      <NextEventsHome />
+      <PastEventsHome />
       <Subscribe />
     </div>
   );

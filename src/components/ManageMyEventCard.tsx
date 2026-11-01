@@ -113,16 +113,16 @@ const ManageMyEventCard = ({
         </span>
 
         {/* Event Title and Date */}
-<div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
-  <h2 className="min-w-0 flex-1 line-clamp-2 text-xl font-bold leading-snug text-white drop-shadow-md">
-    {event.title}
-  </h2>
+        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
+          <h2 className="min-w-0 flex-1 line-clamp-2 text-xl font-bold leading-snug text-white drop-shadow-md">
+            {event.title}
+          </h2>
 
-  <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-    <CalendarDays size={15} className="shrink-0" />
-    <span>{formatDate(event.eventDate)}</span>
-  </div>
-</div>
+          <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            <CalendarDays size={15} className="shrink-0" />
+            <span>{formatDate(event.eventDate)}</span>
+          </div>
+        </div>
       </div>
 
       {/* Event Information */}

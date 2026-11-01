@@ -1,4 +1,4 @@
-import EventsFilter from "@/components/EventsFilter";
+import NextEventsFilter from "@/components/NextEventsFilter";
 import { IEvent } from "@/type/Type";
 import { CalendarDays, Leaf, Plus } from "lucide-react";
 import Link from "next/link";
@@ -80,7 +80,7 @@ const AllEventsPage = async () => {
 
         {/* Events Filter and Cards */}
         {events.length > 0 ? (
-          <EventsFilter events={events} />
+          <NextEventsFilter events={events} />
         ) : (
           <div className="rounded-3xl border border-dashed border-green-200 bg-white px-6 py-20 text-center shadow-sm transition-colors duration-300 dark:border-green-900 dark:bg-gray-900">
             <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-green-50 dark:bg-green-900/30">

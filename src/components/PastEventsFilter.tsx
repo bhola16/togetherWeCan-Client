@@ -1,15 +1,15 @@
 "use client";
 
-import EventsCard from "@/components/EventsCard";
-import { IEvent } from "@/type/Type";
+import HomeEventCard from "@/components/HomeEventCard";
+import { IPastEvent } from "@/type/Type";
 import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
-interface EventsFilterProps {
-  events: IEvent[];
+interface PastEventsFilterProps {
+  events: IPastEvent[];
 }
 
-const EventsFilter = ({ events }: EventsFilterProps) => {
+const PastEventsFilter = ({ events }: PastEventsFilterProps) => {
   const [selectedType, setSelectedType] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -70,7 +70,7 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search events or areas..."
+            placeholder="Search past events or areas..."
             className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-10 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-4 focus:ring-green-600/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-green-500"
           />
 
@@ -94,13 +94,17 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
           <span className="font-bold text-green-700 dark:text-green-400">
             {filteredEvents.length}
           </span>{" "}
-          of {events.length} events
+          of {events.length} past events
         </p>
       </div>
 
-      {/* Only Filtered Event Cards */}
+      {/* Filtered Past Event Cards */}
       {filteredEvents.length > 0 ? (
-        <EventsCard events={filteredEvents} />
+        <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredEvents.map((event) => (
+            <HomeEventCard key={event._id} event={event} status="completed" />
+          ))}
+        </div>
       ) : (
         <div className="rounded-3xl border border-dashed border-green-200 bg-white px-6 py-16 text-center shadow-sm dark:border-green-900 dark:bg-gray-900">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-50 dark:bg-green-900/30">
@@ -108,12 +112,12 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
           </div>
 
           <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-            No Matching Events
+            No Matching Past Events
           </h2>
 
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-500 dark:text-gray-400">
-            We couldn&apos;t find any events matching your search. Try another
-            event type or search keyword.
+            We couldn&apos;t find any past events matching your search. Try
+            another event type or search keyword.
           </p>
 
           {/* Clear All Filters */}
@@ -132,4 +136,4 @@ const EventsFilter = ({ events }: EventsFilterProps) => {
   );
 };
 
-export default EventsFilter;
+export default PastEventsFilter;
