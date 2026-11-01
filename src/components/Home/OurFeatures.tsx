@@ -1,14 +1,12 @@
-
-import Link from "next/link";
 import {
+  ArrowRight,
   CalendarDays,
-  Users,
+  HandHeart,
   HeartHandshake,
   MapPin,
-  ShieldCheck,
-  ArrowRight,
   PlusCircle,
-  HandHeart,
+  ShieldCheck,
+  Users,
 } from "lucide-react";
 
 const features = [
@@ -17,16 +15,16 @@ const features = [
     title: "Discover Community Events",
     description:
       "Explore upcoming social development events, from tree plantations to donation drives and community cleanups.",
-    color: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
-    href: "/events",
+    color:
+      "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
   },
   {
     icon: PlusCircle,
     title: "Create Your Own Event",
     description:
       "Have an idea to make a difference? Create and organize your own community event and invite others to participate.",
-    color: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400",
-    href: "/events/create",
+    color:
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400",
   },
   {
     icon: Users,
@@ -34,15 +32,14 @@ const features = [
     description:
       "Connect with people who share your passion. Join meaningful initiatives and contribute your time and skills.",
     color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
-    href: "/events",
   },
   {
     icon: HeartHandshake,
     title: "Build Strong Communities",
     description:
       "Bring people together, encourage collaboration, and create lasting positive changes in your local community.",
-    color: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400",
-    href: "/events",
+    color:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400",
   },
   {
     icon: MapPin,
@@ -50,15 +47,14 @@ const features = [
     description:
       "Find meaningful activities and volunteering opportunities happening around your community.",
     color: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400",
-    href: "/events",
   },
   {
     icon: ShieldCheck,
     title: "Secure & Easy Participation",
     description:
       "Enjoy a simple and secure experience with user authentication and convenient event participation.",
-    color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
-    href: "/events",
+    color:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
   },
 ];
 
@@ -93,19 +89,16 @@ const OurFeaturesPage = () => {
             const Icon = feature.icon;
 
             return (
-              <Link
+              <section
                 key={feature.title}
-                href={feature.href}
-                className="group relative overflow-hidden rounded-2xl border border-green-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900 dark:hover:border-green-800 dark:hover:bg-gray-900"
-              >
+                className="group relative overflow-hidden rounded-2xl border border-green-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-green-300 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900 dark:hover:border-green-800">
                 {/* Decorative Background */}
                 <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-green-50 opacity-0 transition-all duration-500 group-hover:scale-150 group-hover:opacity-100 dark:bg-green-900/30" />
 
                 <div className="relative z-10">
                   {/* Feature Icon */}
                   <div
-                    className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl ${feature.color} transition-all duration-300 group-hover:rotate-6 group-hover:scale-110`}
-                  >
+                    className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl ${feature.color} transition-all duration-300 group-hover:rotate-6 group-hover:scale-110`}>
                     <Icon size={27} />
                   </div>
 
@@ -127,7 +120,7 @@ const OurFeaturesPage = () => {
                     />
                   </div>
                 </div>
-              </Link>
+              </section>
             );
           })}
         </div>
