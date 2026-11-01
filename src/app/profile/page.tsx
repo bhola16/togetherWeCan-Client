@@ -1,17 +1,19 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import {
   Camera,
+  ImagePlus,
   Mail,
   Pencil,
+  Save,
   ShieldCheck,
   UserRound,
-  Save,
   X,
-  ImagePlus,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -26,7 +28,7 @@ const ProfilePage = () => {
 
   const user = session?.user;
 
-  // Initialize editable fields from the current session
+  // Initialize editable fields from the current session.
   useEffect(() => {
     if (user) {
       setEditName(user.name || "");
@@ -34,15 +36,15 @@ const ProfilePage = () => {
     }
   }, [user]);
 
-  // Cancel editing
+  // Cancel editing.
   const handleCancel = () => {
     setEditName(user?.name || "");
     setEditImage(user?.image || "");
     setIsEditing(false);
   };
 
-  // Update profile
-  const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Update profile.
+  const handleUpdateProfile = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!editName.trim()) {
@@ -72,9 +74,13 @@ const ProfilePage = () => {
         return;
       }
 
+      // Refresh the session to get the updated user information.
+      await authClient.getSession();
+
       toast.success("Profile updated successfully!");
       setIsEditing(false);
-    } catch {
+    } catch (error) {
+      console.error("Profile update error:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSaving(false);
@@ -89,29 +95,45 @@ const ProfilePage = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center bg-gray-50 px-4 text-center dark:bg-gray-950">
-        <UserRound size={48} className="mb-4 text-gray-400" />
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-          Please sign in
-        </h2>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Sign in to view your profile information.
-        </p>
-      </div>
-    );
-  }
+ if (!user) {
+   return (
+     <div className="flex min-h-[70vh] items-center justify-center bg-gray-50 px-4 dark:bg-gray-950">
+       <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-950">
+           <UserRound
+             size={32}
+             className="text-green-600 dark:text-green-400"
+           />
+         </div>
+
+         <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+           Login Required
+         </h2>
+
+         <p className="mb-7 text-sm leading-6 text-gray-500 dark:text-gray-400">
+           Please sign in to access your profile and manage your account
+           information.
+         </p>
+
+         <Link href="/login" className="block">
+           <Button className="w-full rounded-lg bg-green-600 py-6 text-base font-semibold text-white transition-colors hover:bg-green-700">
+             Please Login First
+           </Button>
+         </Link>
+       </div>
+     </div>
+   );
+ }
 
   const profileDetails = [
     {
       label: "Full Name",
-      value: user.name || "Not provided",
+      value: user?.name || "Not provided",
       icon: UserRound,
     },
     {
       label: "Email Address",
-      value: user.email || "Not provided",
+      value: user?.email || "Not provided",
       icon: Mail,
     },
   ];
@@ -136,17 +158,17 @@ const ProfilePage = () => {
           <div className="relative h-40 bg-gradient-to-r from-green-700 via-emerald-600 to-teal-700 sm:h-48">
             <div className="absolute -bottom-12 left-6 sm:left-10">
               <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-green-100 shadow-lg dark:border-gray-900 dark:bg-green-950 sm:h-32 sm:w-32">
-                {(isEditing ? editImage : user.image) ? (
+                {(isEditing ? editImage : user?.image) ? (
                   <Image
-                    src={(isEditing ? editImage : user.image)!}
-                    alt={user.name || "Profile"}
+                    src={(isEditing ? editImage : user?.image)!}
+                    alt={user?.name || "Profile"}
                     fill
                     unoptimized
                     className="object-cover"
                   />
                 ) : (
                   <span className="text-4xl font-bold text-green-800 dark:text-green-300">
-                    {user.name?.charAt(0).toUpperCase() || "U"}
+                    {user?.name?.charAt(0).toUpperCase() || "U"}
                   </span>
                 )}
               </div>
@@ -163,12 +185,12 @@ const ProfilePage = () => {
           <div className="flex flex-col gap-4 px-6 pb-6 pt-16 sm:flex-row sm:items-end sm:justify-between sm:px-10 sm:pt-16">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {user.name || "User"}
+                {user?.name || "User"}
               </h2>
 
               <p className="mt-1 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <Mail size={15} />
-                {user.email}
+                {user?.email}
               </p>
 
               <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-950 dark:text-green-400">
@@ -202,7 +224,6 @@ const ProfilePage = () => {
             </div>
 
             {isEditing ? (
-              /* Edit Profile Form */
               <form onSubmit={handleUpdateProfile} className="space-y-5">
                 {/* Full Name */}
                 <div>
@@ -247,7 +268,7 @@ const ProfilePage = () => {
                     <input
                       id="email"
                       type="email"
-                      value={user.email || ""}
+                      value={user?.email || ""}
                       readOnly
                       className="w-full cursor-not-allowed rounded-xl border border-gray-200 bg-gray-100 py-3 pl-10 pr-4 text-sm text-gray-500 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
                     />
@@ -307,7 +328,6 @@ const ProfilePage = () => {
                 </div>
               </form>
             ) : (
-              /* Profile Information Display */
               <div className="grid gap-5 sm:grid-cols-2">
                 {profileDetails.map((detail) => {
                   const Icon = detail.icon;

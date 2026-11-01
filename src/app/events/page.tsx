@@ -1,4 +1,4 @@
-import NextEventsFilter from "@/components/NextEventsFilter";
+import NextEventsFilter from "@/components/EventsFilter";
 import { IEvent } from "@/type/Type";
 import { CalendarDays, Leaf, Plus } from "lucide-react";
 import Link from "next/link";

@@ -1,6 +1,5 @@
 "use client";
 
-import HomeEventCard from "@/components/HomeEventCard";
 import PastEventsFilter from "@/components/PastEventsFilter";
 import { IPastEvent } from "@/type/Type";
 import { Archive, ArrowRight, Sparkles } from "lucide-react";

@@ -69,7 +69,7 @@ const PastEventsHome = () => {
           </div>
 
           <Link
-            href="/events/pastevents"
+            href="/pastevents"
             className="group inline-flex w-fit items-center gap-3 rounded-xl bg-emerald-700 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-800 hover:shadow-xl hover:shadow-emerald-700/30 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-700">
             Explore All Events
             <ArrowRight
@@ -113,7 +113,7 @@ const PastEventsHome = () => {
               </p>
 
               <Link
-                href="/events/pastevents"
+                href="/pastevents"
                 className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-bold text-white transition-all hover:bg-emerald-800 hover:shadow-lg active:scale-95">
                 Explore Completed Events
                 <ArrowRight size={17} />
