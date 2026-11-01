@@ -23,10 +23,14 @@ interface EventDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
+const API_URL = (
+  process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
+).replace(/\/$/, "");
+
 const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
   const { id } = await params;
 
-  const res = await fetch(`http://localhost:8000/events/${id}`, {
+  const res = await fetch(`${API_URL}/events/${id}`, {
     cache: "no-store",
   });
 

@@ -39,6 +39,22 @@ const formatJoinedDate = (date: string | null) => {
   });
 };
 
+// Determine event status based on its date.
+const getEventStatus = (date: string) => {
+  if (!date) return "Joined";
+
+  const eventDate = new Date(`${date.slice(0, 10)}T00:00:00Z`);
+
+  if (Number.isNaN(eventDate.getTime())) {
+    return "Joined";
+  }
+
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  return eventDate < today ? "Completed" : "Upcoming";
+};
+
 const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
   const event: IEvent | null = joinedEvent.event;
 
@@ -55,6 +71,8 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
       </div>
     );
   }
+
+  const eventStatus = getEventStatus(event.eventDate);
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900 dark:hover:border-emerald-900">
@@ -77,10 +95,17 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
           </span>
         </div>
 
-        {/* Joined Status */}
-        <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md">
+        {/* Event Status */}
+        <div
+          className={`absolute right-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white shadow-md ${
+            eventStatus === "Completed"
+              ? "bg-gray-600"
+              : eventStatus === "Upcoming"
+                ? "bg-emerald-600"
+                : "bg-blue-600"
+          }`}>
           <CheckCircle2 size={14} />
-          Joined
+          {eventStatus}
         </div>
 
         {/* Image Bottom Content */}
@@ -120,6 +145,7 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
               <p className="text-[11px] font-medium text-gray-400">
                 Event Date
               </p>
+
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                 {formatDate(event.eventDate)}
               </p>
@@ -134,6 +160,7 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
 
             <div className="min-w-0">
               <p className="text-[11px] font-medium text-gray-400">Location</p>
+
               <p className="line-clamp-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
                 {event.location}
               </p>
@@ -148,6 +175,7 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
 
             <div className="min-w-0">
               <p className="text-[11px] font-medium text-gray-400">Joined On</p>
+
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                 {formatJoinedDate(joinedEvent.joinedAt)}
               </p>
@@ -155,7 +183,7 @@ const JoinedCard = ({ joinedEvent }: { joinedEvent: JoinedEvent }) => {
           </div>
         </div>
 
-        {/* Footer - Unchanged */}
+        {/* Footer */}
         <CardFooter className="-mx-5 mt-1 flex items-center justify-center gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2 transition-colors duration-300 hover:bg-emerald-50 dark:border-gray-800 dark:bg-gray-800/50 dark:hover:bg-emerald-950/30">
           <Link
             href={`/events/${event._id}`}

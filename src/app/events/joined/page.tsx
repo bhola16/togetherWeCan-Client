@@ -3,7 +3,7 @@
 import JoinedCard from "@/components/JoinedCard";
 import { authClient } from "@/lib/auth-client";
 import { JoinedEvent } from "@/type/Type";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, History, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -44,30 +44,8 @@ const JoinedPage = () => {
 
         const data: JoinedEvent[] = await res.json();
 
-        // Sort using the latest event date from the event document.
-        // Events without a valid date appear at the end.
-        const sortedEvents = [...data].sort((a, b) => {
-          const dateA = a.event?.eventDate
-            ? new Date(a.event.eventDate).getTime()
-            : Number.MAX_SAFE_INTEGER;
-
-          const dateB = b.event?.eventDate
-            ? new Date(b.event.eventDate).getTime()
-            : Number.MAX_SAFE_INTEGER;
-
-          const safeDateA = Number.isNaN(dateA)
-            ? Number.MAX_SAFE_INTEGER
-            : dateA;
-
-          const safeDateB = Number.isNaN(dateB)
-            ? Number.MAX_SAFE_INTEGER
-            : dateB;
-
-          return safeDateA - safeDateB;
-        });
-
         if (!cancelled) {
-          setJoinedEvents(sortedEvents);
+          setJoinedEvents(data);
         }
       } catch (error) {
         console.error("Fetch joined events error:", error);
@@ -88,6 +66,42 @@ const JoinedPage = () => {
       cancelled = true;
     };
   }, [user?.id, isPending]);
+
+  // Get the latest event date from the event document.
+  const getEventDate = (joinedEvent: JoinedEvent) => {
+    const dateString = joinedEvent.event?.eventDate || joinedEvent.eventDate;
+
+    if (!dateString) return null;
+
+    const date = new Date(`${dateString.slice(0, 10)}T00:00:00`);
+
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  // Separate upcoming and previous events.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingEvents = joinedEvents
+    .filter((joinedEvent) => {
+      const eventDate = getEventDate(joinedEvent);
+
+      return eventDate !== null && eventDate >= today;
+    })
+    .sort((a, b) => getEventDate(a)!.getTime() - getEventDate(b)!.getTime());
+
+  const previousEvents = joinedEvents
+    .filter((joinedEvent) => {
+      const eventDate = getEventDate(joinedEvent);
+
+      return eventDate === null || eventDate < today;
+    })
+    .sort((a, b) => {
+      const dateA = getEventDate(a)?.getTime() ?? Number.MIN_SAFE_INTEGER;
+      const dateB = getEventDate(b)?.getTime() ?? Number.MIN_SAFE_INTEGER;
+
+      return dateB - dateA;
+    });
 
   if (isPending) {
     return null;
@@ -133,15 +147,15 @@ const JoinedPage = () => {
         </div>
 
         {/* Event Count */}
-        <div className="mb-8 flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/30">
+        <div className="mb-10 flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/30">
           <Users className="text-green-600" size={24} />
 
           <p className="font-medium text-gray-700 dark:text-gray-300">
             You have joined{" "}
             <span className="font-bold text-green-700 dark:text-green-400">
               {joinedEvents.length}
-            </span>{" "}
-            {joinedEvents.length === 1 ? "event" : "events"}.
+            </span>
+            {joinedEvents.length === 1 ? " event" : " events"}.
           </p>
         </div>
 
@@ -184,11 +198,103 @@ const JoinedPage = () => {
             </Link>
           </div>
         ) : (
-          /* Joined Events Grid */
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {joinedEvents.map((joinedEvent) => (
-              <JoinedCard key={joinedEvent._id} joinedEvent={joinedEvent} />
-            ))}
+          <div className="space-y-16">
+            {/* Upcoming Joined Events */}
+            <section>
+              <div className="mb-6 flex items-center gap-3">
+                <div className="rounded-xl bg-green-100 p-3 dark:bg-green-950">
+                  <CalendarDays className="text-green-600" size={24} />
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Upcoming Joined Events
+                  </h2>
+
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Events you are going to participate in.
+                  </p>
+                </div>
+
+                <span className="ml-auto rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700 dark:bg-green-950 dark:text-green-400">
+                  {upcomingEvents.length}
+                </span>
+              </div>
+
+              {upcomingEvents.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {upcomingEvents.map((joinedEvent) => (
+                    <JoinedCard
+                      key={joinedEvent._id}
+                      joinedEvent={joinedEvent}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-900">
+                  <CalendarDays
+                    size={36}
+                    className="mx-auto mb-3 text-gray-400"
+                  />
+
+                  <p className="font-medium text-gray-700 dark:text-gray-300">
+                    No upcoming joined events.
+                  </p>
+
+                  <Link
+                    href="/events"
+                    className="mt-3 inline-flex items-center gap-2 font-semibold text-green-600 hover:text-green-700">
+                    Explore Events
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              )}
+            </section>
+
+            {/* My Previous Events */}
+            <section>
+              <div className="mb-6 flex items-center gap-3">
+                <div className="rounded-xl bg-gray-200 p-3 dark:bg-gray-800">
+                  <History
+                    className="text-gray-600 dark:text-gray-300"
+                    size={24}
+                  />
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    My Previous Events
+                  </h2>
+
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Events you have joined in the past.
+                  </p>
+                </div>
+
+                <span className="ml-auto rounded-full bg-gray-200 px-3 py-1 text-sm font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                  {previousEvents.length}
+                </span>
+              </div>
+
+              {previousEvents.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {previousEvents.map((joinedEvent) => (
+                    <JoinedCard
+                      key={joinedEvent._id}
+                      joinedEvent={joinedEvent}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-900">
+                  <History size={36} className="mx-auto mb-3 text-gray-400" />
+
+                  <p className="font-medium text-gray-700 dark:text-gray-300">
+                    No previous events yet.
+                  </p>
+                </div>
+              )}
+            </section>
           </div>
         )}
       </div>

@@ -23,13 +23,19 @@ const AllEventsPage = async () => {
   today.setHours(0, 0, 0, 0);
 
   // Show only today's and future events.
-  const events = allEvents.filter((event) => {
-    if (!event.eventDate) return false;
+  const events = allEvents
+    .filter((event) => {
+      if (!event.eventDate) return false;
 
-    const eventDate = new Date(`${event.eventDate}T00:00:00`);
+      const eventDate = new Date(`${event.eventDate.slice(0, 10)}T00:00:00`);
 
-    return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
-  });
+      return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
+    })
+    .sort(
+      (a, b) =>
+        new Date(a.eventDate.slice(0, 10)).getTime() -
+        new Date(b.eventDate.slice(0, 10)).getTime(),
+    );
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-green-50/70 via-white to-gray-50 px-4 py-14 transition-colors duration-300 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
