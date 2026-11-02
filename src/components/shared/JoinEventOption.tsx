@@ -108,7 +108,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           `${API_URL}/eventParticipants/check?${params.toString()}`,
           {
             headers: {
-              Authorization: `Bearer ${tokenData.token}`,
+              Authorization: `BearerEventOP1 ${tokenData.token}`,
             },
             cache: "no-store",
           },
@@ -198,7 +198,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenData.token}`,
+            Authorization: `BearerEventDelete ${tokenData.token}`,
           },
           body: JSON.stringify({
             eventId: event._id,
@@ -233,7 +233,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenData.token}`,
+            Authorization: `BearerEventPost ${tokenData.token}`,
           },
           body: JSON.stringify(participantData),
         });

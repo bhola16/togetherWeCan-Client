@@ -4,6 +4,7 @@ import ManageMyEventCard from "@/components/shared/ManageMyEventCard";
 import RetryButton from "@/components/shared/RetryButton";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenClient";
 import { IEvent } from "@/type/Type";
 import {
   AlertCircle,
@@ -77,16 +78,16 @@ const ManageMyEvents = () => {
       setError(false);
 
       try {
-        const { data, error: tokenError } = await authClient.token();
+      const { token, error } = await getTokenFromClient();
 
-        if (tokenError || !data?.token) {
+        if (error || !token) {
           if (!cancelled) router.replace("/login");
           return;
         }
 
         const res = await fetch(`${API_URL}/my-events`, {
           headers: {
-            Authorization: `BearerManage ${data.token}`,
+            Authorization: `BearerManage ${token}`,
           },
           cache: "no-store",
         });
@@ -133,9 +134,9 @@ const ManageMyEvents = () => {
     setDeletingId(eventId);
 
     try {
-      const { data, error: tokenError } = await authClient.token();
+      const { token, error } = await getTokenFromClient();
 
-      if (tokenError || !data?.token) {
+      if (error || !token) {
         router.replace("/login");
         return;
       }
@@ -143,7 +144,7 @@ const ManageMyEvents = () => {
       const res = await fetch(`${API_URL}/events/${eventId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `BearerDelete ${data.token}`,
+          Authorization: `BearerDelete ${token}`,
         },
       });
 

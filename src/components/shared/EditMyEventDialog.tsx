@@ -38,7 +38,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenClient";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
@@ -136,13 +136,12 @@ const handleSubmit = async (e: React.SubmitEvent <HTMLFormElement>) => {
 
   try {
     // Get JWT token from Better Auth
-    const { data: tokenData, error: tokenError } = await authClient.token();
+      const { token, error } = await getTokenFromClient();
 
-    if (tokenError || !tokenData?.token) {
+    if (error || !token) {
       throw new Error("Please log in to update your event.");
     }
 
-    const token = tokenData?.token
 
     const res = await fetch(`${API_URL}/events/${event._id}`, {
       method: "PATCH",

@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenClient";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
@@ -114,9 +115,9 @@ const CreateEventPage = () => {
       setIsSubmitting(true);
 
       // Get JWT token from Better Auth.
-      const { data, error } = await authClient.token();
+      const { token, error } = await getTokenFromClient();
 
-      if (error || !data?.token) {
+      if (error || !token) {
         toast.error(
           error?.message || "Authentication failed. Please log in again.",
         );
@@ -124,7 +125,7 @@ const CreateEventPage = () => {
         return;
       }
 
-      const token = data?.token;
+      
       // Send event data with JWT authentication.
       const res = await fetch(`${API_URL}/create-events`, {
         method: "POST",

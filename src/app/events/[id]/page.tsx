@@ -3,6 +3,7 @@ import EventDetailsHero from "@/components/event-details/EventDetailsHero";
 import EventDetailsSidebar from "@/components/event-details/EventDetailsSidebar";
 import RetryButton from "@/components/shared/RetryButton";
 import { auth } from "@/lib/auth";
+import { getTokenFromServer } from "@/lib/getTokenServer";
 import { IEvent } from "@/type/Type";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -30,19 +31,13 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     redirect("/login");
   }
 
-  // Get JWT token.
-  let token: string;
+  const token = await getTokenFromServer();
 
   try {
-    const jwtToken = await auth.api.getToken({
-      headers: requestHeaders,
-    });
 
-    if (!jwtToken?.token) {
+    if (!token) {
       redirect("/login");
     }
-
-    token = jwtToken.token;
   } catch {
     redirect("/login");
   }
@@ -53,7 +48,7 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     // Fetch event details.
     res = await fetch(`${API_URL}/events/${id}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `BearerDetails ${token}`,
       },
       cache: "no-store",
     });

@@ -5,6 +5,7 @@ import JoinedCard from "@/components/shared/JoinedCard";
 import RetryButton from "@/components/shared/RetryButton";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenClient";
 import { JoinedEvent } from "@/type/Type";
 import {
   AlertCircle,
@@ -48,9 +49,9 @@ const JoinedPage = () => {
 
       try {
         // Get JWT token.
-        const { data, error: tokenError } = await authClient.token();
+      const { token, error } = await getTokenFromClient();
 
-        if (tokenError || !data?.token) {
+        if (error || !token) {
           if (!cancelled) {
             router.replace("/login");
           }
@@ -61,7 +62,7 @@ const JoinedPage = () => {
 
         const res = await fetch(url, {
           headers: {
-            Authorization: `Bearer ${data.token}`,
+            Authorization: `BearerJoined ${token}`,
           },
           cache: "no-store",
         });
