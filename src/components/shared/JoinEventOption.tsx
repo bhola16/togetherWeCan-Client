@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenClient";
 import { IEvent } from "@/type/Type";
 import { CheckCircle2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -94,9 +95,9 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
       setCheckingParticipation(true);
 
       try {
-        const { data: tokenData, error: tokenError } = await authClient.token();
+        const {token, error} = await getTokenFromClient();
 
-        if (tokenError || !tokenData?.token) {
+        if (error ||!token) {
           throw new Error("Authentication failed.");
         }
 
@@ -108,7 +109,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           `${API_URL}/eventParticipants/check?${params.toString()}`,
           {
             headers: {
-              Authorization: `BearerEventOP1 ${tokenData.token}`,
+              Authorization: `Bearer ${token}`,
             },
             cache: "no-store",
           },
@@ -166,8 +167,10 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
 
   // Join or unjoin event.
   const handleParticipation = async () => {
+    // Check login before allowing participation.
     if (!user) {
-      router.push("/login");
+      toast.error("You must be logged in to join this event.");
+      // router.push("/login");
       return;
     }
 
@@ -184,9 +187,9 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
 
     try {
       // Get the authenticated user's JWT.
-      const { data: tokenData, error: tokenError } = await authClient.token();
+        const { token, error } = await getTokenFromClient();
 
-      if (tokenError || !tokenData?.token) {
+      if (error || !token) {
         toast.error("Authentication failed. Please log in again.");
         router.push("/login");
         return;
@@ -198,7 +201,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `BearerEventDelete ${tokenData.token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             eventId: event._id,
@@ -233,7 +236,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `BearerEventPost ${tokenData.token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(participantData),
         });

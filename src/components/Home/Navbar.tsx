@@ -23,14 +23,6 @@ import { authClient } from "@/lib/auth-client";
 import ThemeToggle from "../Home/ThemeToggle";
 import { Button } from "../ui/button";
 
-const navLinks = [
-  {
-    name: "Upcoming Events",
-    href: "/events",
-    icon: CalendarDays,
-  },
-];
-
 const profileLinks = [
   {
     name: "Create Event",
@@ -58,22 +50,24 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  // Separate refs for desktop and mobile profile sections
   const desktopProfileRef = useRef<HTMLDivElement>(null);
   const mobileProfileRef = useRef<HTMLDivElement>(null);
 
   const isLoggedIn = !!session?.user;
 
-  // Close mobile menu and profile popover
   const closeMenu = () => {
     setIsMenuOpen(false);
     setIsProfileOpen(false);
   };
 
-  // Logout handler
   const handleLogout = async () => {
     try {
-      await authClient.signOut();
+      const { error } = await authClient.signOut();
+
+      if (error) {
+        toast.error("Failed to log out. Please try again.");
+        return;
+      }
 
       toast.success("Logged out successfully!");
 
@@ -93,7 +87,6 @@ const Navbar = () => {
       const target = event.target as Node;
 
       const isInsideDesktop = desktopProfileRef.current?.contains(target);
-
       const isInsideMobile = mobileProfileRef.current?.contains(target);
 
       if (!isInsideDesktop && !isInsideMobile) {
@@ -143,27 +136,20 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex items-center gap-2 text-md font-semibold transition-colors duration-200 ${
-                  isActive
-                    ? "text-green-700 dark:text-green-400"
-                    : "text-gray-700 hover:text-green-700 dark:text-gray-300 dark:hover:text-green-400"
-                }`}>
-                <link.icon size={17} />
-                {link.name}
-              </Link>
-            );
-          })}
+          <Link
+            href="/events"
+            className={`flex items-center gap-2 text-md font-semibold transition-colors duration-200 ${
+              pathname === "/events"
+                ? "text-green-700 dark:text-green-400"
+                : "text-gray-700 hover:text-green-700 dark:text-gray-300 dark:hover:text-green-400"
+            }`}>
+            <CalendarDays size={17} />
+            Upcoming Events
+          </Link>
         </div>
 
         {/* Desktop Actions */}
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           <ThemeToggle />
 
           {!isPending && (
@@ -209,7 +195,6 @@ const Navbar = () => {
                     </button>
 
                     {/* Desktop Profile Popover */}
-
                     {isProfileOpen && (
                       <div className="absolute right-0 top-full z-[60] mt-3 w-72 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 animate-in fade-in slide-in-from-top-2 duration-200 dark:border-gray-700 dark:bg-gray-900 dark:ring-white/10">
                         {/* Profile Header */}
@@ -285,7 +270,7 @@ const Navbar = () => {
 
                         <div className="border-t border-gray-200 dark:border-gray-700" />
 
-                        {/* Logout */}
+                        {/* Logout inside Desktop Popover */}
                         <div className="p-2">
                           <button
                             type="button"
@@ -302,15 +287,17 @@ const Navbar = () => {
                     )}
                   </div>
 
-                  {/* Existing Desktop Logout Button */}
-                  <Button
+                  {/* Desktop Logout - Always Visible After Login */}
+                  <button
+                    type="button"
                     onClick={handleLogout}
-                    className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700">
-                    <LogOut size={16} />
+                    className="flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
+                    <LogOut size={18} />
                     Logout
-                  </Button>
+                  </button>
                 </>
               ) : (
+                /* Desktop Login */
                 <Link
                   href="/login"
                   className="flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-700">
@@ -322,60 +309,55 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <Button
-          type="button"
-          onClick={() => {
-            setIsMenuOpen((previous) => !previous);
-            setIsProfileOpen(false);
-          }}
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isMenuOpen}
-          className="rounded-lg p-2 text-gray-700 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800 md:hidden">
-          {isMenuOpen ? <X size={25} /> : <Menu size={25} />}
-        </Button>
+        {/* Mobile Theme Toggle and Menu Button */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+
+          <Button
+            type="button"
+            onClick={() => {
+              setIsMenuOpen((previous) => !previous);
+              setIsProfileOpen(false);
+            }}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
+            className="rounded-lg border border-gray-200 bg-gray-100 p-2 text-gray-900 transition-colors hover:bg-green-100 hover:text-green-700 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-green-900/40 dark:hover:text-green-400">
+            {isMenuOpen ? <X size={30} /> : <Menu size={30} />}
+          </Button>
+        </div>
       </nav>
 
       {/* Mobile Navigation */}
-
       {isMenuOpen && (
         <div className="border-t border-gray-100 bg-white px-4 py-4 shadow-lg dark:border-gray-800 dark:bg-gray-950 md:hidden">
           <div className="flex flex-col gap-3">
-            {/* Mobile Navigation Links */}
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href;
+            {/* Upcoming Events and Logout */}
+            <div className="flex items-center justify-between gap-2 rounded-xl border border-gray-200 p-2 dark:border-gray-800">
+              <Link
+                href="/events"
+                onClick={closeMenu}
+                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors duration-200 ${
+                  pathname === "/events"
+                    ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
+                    : "text-gray-700 hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
+                }`}>
+                <CalendarDays size={18} />
+                Upcoming Events
+              </Link>
 
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={closeMenu}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors duration-200 ${
-                    isActive
-                      ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400"
-                      : "text-gray-700 hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-green-400"
-                  }`}>
-                  <Icon size={18} />
-                  {link.name}
-                </Link>
-              );
-            })}
+              {/* Mobile Logout - Visible After Login */}
+              {!isPending && isLoggedIn && (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
+                  <LogOut size={18} />
+                  Logout
+                </button>
+              )}
+            </div>
 
             <div className="my-1 border-t border-gray-200 dark:border-gray-800" />
-
-            {/* Mobile Theme Toggle */}
-            <div className="flex items-center justify-between rounded-xl px-3 py-2">
-              <div>
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  Appearance
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Change your theme
-                </p>
-              </div>
-              <ThemeToggle />
-            </div>
 
             {!isPending && (
               <>
@@ -435,7 +417,6 @@ const Navbar = () => {
                       </button>
 
                       {/* Mobile Profile Popover */}
-
                       {isProfileOpen && (
                         <div className="mt-3 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm animate-in fade-in slide-in-from-top-2 duration-200 dark:border-gray-700 dark:bg-gray-950">
                           {/* View Profile */}
@@ -481,7 +462,7 @@ const Navbar = () => {
 
                           <div className="border-t border-gray-200 dark:border-gray-700" />
 
-                          {/* Logout */}
+                          {/* Logout inside Mobile Profile Popover */}
                           <div className="p-2">
                             <button
                               type="button"

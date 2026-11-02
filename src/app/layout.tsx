@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { Josefin_Sans } from "next/font/google";
 
 import Footer from "@/components/Home/Footer";
-import ThemeProvider from "@/components/Home/ThemeProvider";
 import { Toaster } from "sonner";
 import "./globals.css";
+import ThemeProvider from "@/components/Home/ThemeProvider";
 
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],
@@ -24,14 +24,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${josefinSans.className} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
-          <Navbar />
+           <Navbar />
 
           <main className="flex-1">{children}</main>
 
           <Footer />
 
           <Toaster position="bottom-right" richColors />
+       
         </ThemeProvider>
+         
       </body>
     </html>
   );

@@ -1,13 +1,10 @@
+
 import EventDetailsContent from "@/components/event-details/EventDetailsContent";
 import EventDetailsHero from "@/components/event-details/EventDetailsHero";
 import EventDetailsSidebar from "@/components/event-details/EventDetailsSidebar";
 import RetryButton from "@/components/shared/RetryButton";
-import { auth } from "@/lib/auth";
-import { getTokenFromServer } from "@/lib/getTokenServer";
 import { IEvent } from "@/type/Type";
-import { headers } from "next/headers";
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 interface EventDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -20,36 +17,11 @@ const API_URL = (
 const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
   const { id } = await params;
 
-  const requestHeaders = await headers();
-
-  // Check authentication.
-  const session = await auth.api.getSession({
-    headers: requestHeaders,
-  });
-
-  if (!session) {
-    redirect("/login");
-  }
-
-  const token = await getTokenFromServer();
-
-  try {
-
-    if (!token) {
-      redirect("/login");
-    }
-  } catch {
-    redirect("/login");
-  }
-
   let res: Response;
 
   try {
-    // Fetch event details.
+    // Fetch public event details without authentication.
     res = await fetch(`${API_URL}/events/${id}`, {
-      headers: {
-        Authorization: `BearerDetails ${token}`,
-      },
       cache: "no-store",
     });
   } catch {
@@ -62,19 +34,14 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
-            We couldn't connect to the server. Please check your connection and
-            try again later.
+            We couldn&apos;t connect to the server. Please check your connection
+            and try again later.
           </p>
 
           <RetryButton />
         </div>
       </main>
     );
-  }
-
-  // Handle authentication failure.
-  if (res.status === 401 || res.status === 403) {
-    redirect("/login");
   }
 
   // Handle missing or invalid event IDs.
@@ -92,7 +59,7 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
-            We couldn't load this event right now. Please try again later.
+            We couldn&apos;t load this event right now. Please try again later.
           </p>
 
           <RetryButton />

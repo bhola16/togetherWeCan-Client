@@ -93,6 +93,13 @@ const Footer = () => {
                   Upcoming Events
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/pastevents"
+                  className="transition hover:text-green-600 dark:hover:text-green-400">
+                  Past Events
+                </Link>
+              </li>
 
               <li>
                 <Link
@@ -165,7 +172,7 @@ const Footer = () => {
                   size={19}
                   className="mt-0.5 shrink-0 text-green-600 dark:text-green-500"
                 />
-                <span>Dhaka, Bangladesh</span>
+                <span>Khulna, Bangladesh</span>
               </li>
 
               <li className="flex items-center gap-3">
@@ -174,9 +181,9 @@ const Footer = () => {
                   className="shrink-0 text-green-600 dark:text-green-500"
                 />
                 <a
-                  href="mailto:hello@togetherwecan.com"
+                  href="mailto:ku.bhola16@gmail.com"
                   className="transition hover:text-green-600 dark:hover:text-green-400">
-                  hello@togetherwecan.com
+                  ku.bhola16@gmail.com
                 </a>
               </li>
 
