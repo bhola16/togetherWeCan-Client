@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { IPastEvent } from "@/type/Type";
 import { ArrowRight, CalendarDays, CheckCircle2, Clock } from "lucide-react";
@@ -26,15 +27,20 @@ const HomeEventCard = ({ event, status }: HomeEventCardProps) => {
     });
   };
 
+  const imageSrc = event.imageUrl?.trim()
+    ? event.imageUrl.trim()
+    : "/images/event-placeholder.jpg";
+
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-gray-200/80 bg-white p-0 shadow-md transition-all duration-500 hover:-translate-y-2 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-900/15 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-emerald-800">
       <Link
         href={`/events/${event._id}`}
         aria-label={`View ${event.title}`}
-        className="relative block h-72 shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-800">
+        className="relative block h-72 shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-800"
+      >
         <Image
-          src={event.imageUrl}
-          alt={event.title}
+          src={imageSrc}
+          alt={event.title || "Community event"}
           fill
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

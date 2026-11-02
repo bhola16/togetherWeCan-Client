@@ -119,7 +119,7 @@ const EditMyEventDialog = ({ event, onUpdated }: EditMyEventDialogProps) => {
   // Update event using PATCH.
 
   
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.SubmitEvent <HTMLFormElement>) => {
   e.preventDefault();
 
   if (!formData.eventType) {

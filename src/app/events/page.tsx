@@ -99,7 +99,7 @@ const AllEventsPage = async () => {
             </h2>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-500 dark:text-gray-400">
-              We couldn't load upcoming events right now. Please try again
+              We couldn&apos;t load upcoming events right now. Please try again
               later.
             </p>
             <RetryButton/>
