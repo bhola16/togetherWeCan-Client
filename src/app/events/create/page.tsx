@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import React, { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,7 @@ const CreateEventPage = () => {
   // Event date must be after today.
   const isInvalidDate = eventDate !== "" && eventDate <= minDate;
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (isSubmitting) return;
