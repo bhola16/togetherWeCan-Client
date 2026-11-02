@@ -1,4 +1,6 @@
 import NextEventsFilter from "@/components/shared/EventsFilter";
+import RetryButton from "@/components/shared/RetryButton";
+import { Button } from "@/components/ui/button";
 import { IEvent } from "@/type/Type";
 import { CalendarDays, Leaf, Plus } from "lucide-react";
 import Link from "next/link";
@@ -8,37 +10,41 @@ const API_URL = (
 ).replace(/\/$/, "");
 
 const AllEventsPage = async () => {
-  const res = await fetch(`${API_URL}/events`, {
-    headers: {
-      authorization: "User log in",
-    },
-    cache: "no-store",
-  });
+  let events: IEvent[] = [];
+  let error = false;
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch events");
+  try {
+    const res = await fetch(`${API_URL}/events`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Request failed: ${res.status}`);
+    }
+
+    const allEvents: IEvent[] = await res.json();
+
+    // Get today's date at midnight (local time).
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Show only today's and future events.
+    events = allEvents
+      .filter((event) => {
+        if (!event.eventDate) return false;
+
+        const eventDate = new Date(`${event.eventDate.slice(0, 10)}T00:00:00`);
+
+        return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
+      })
+      .sort(
+        (a, b) =>
+          new Date(`${a.eventDate.slice(0, 10)}T00:00:00`).getTime() -
+          new Date(`${b.eventDate.slice(0, 10)}T00:00:00`).getTime(),
+      );
+  } catch {
+    error = true;
   }
-
-  const allEvents: IEvent[] = await res.json();
-
-  // Get today's date at midnight (local time).
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Show only today's and future events.
-  const events = allEvents
-    .filter((event) => {
-      if (!event.eventDate) return false;
-
-      const eventDate = new Date(`${event.eventDate.slice(0, 10)}T00:00:00`);
-
-      return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
-    })
-    .sort(
-      (a, b) =>
-        new Date(a.eventDate.slice(0, 10)).getTime() -
-        new Date(b.eventDate.slice(0, 10)).getTime(),
-    );
 
   return (
     <section className="min-h-screen bg-linear-to-b from-green-50/70 via-white to-gray-50 px-4 py-14 transition-colors duration-300 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 sm:px-6 lg:px-8">
@@ -82,7 +88,24 @@ const AllEventsPage = async () => {
         </div>
 
         {/* Events Filter and Cards */}
-        {events.length > 0 ? (
+        {error ? (
+          <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-20 text-center shadow-sm dark:border-gray-700 dark:bg-gray-900">
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800">
+              <CalendarDays size={38} className="text-gray-400" />
+            </div>
+
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+              Unable to Load Events
+            </h2>
+
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-500 dark:text-gray-400">
+              We couldn't load upcoming events right now. Please try again
+              later.
+            </p>
+            <RetryButton/>
+            
+          </div>
+        ) : events.length > 0 ? (
           <NextEventsFilter events={events} />
         ) : (
           <div className="rounded-3xl border border-dashed border-green-200 bg-white px-6 py-20 text-center shadow-sm transition-colors duration-300 dark:border-green-900 dark:bg-gray-900">

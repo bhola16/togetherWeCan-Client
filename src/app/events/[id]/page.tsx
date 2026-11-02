@@ -1,10 +1,11 @@
-
 import EventDetailsContent from "@/components/event-details/EventDetailsContent";
 import EventDetailsHero from "@/components/event-details/EventDetailsHero";
 import EventDetailsSidebar from "@/components/event-details/EventDetailsSidebar";
+import RetryButton from "@/components/shared/RetryButton";
 import { auth } from "@/lib/auth";
 import { IEvent } from "@/type/Type";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 interface EventDetailsPageProps {
@@ -49,6 +50,7 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
   let res: Response;
 
   try {
+    // Fetch event details.
     res = await fetch(`${API_URL}/events/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -56,7 +58,23 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
       cache: "no-store",
     });
   } catch {
-    throw new Error("Unable to connect to the event server.");
+    // Handle server connection failure.
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f7faf9] px-4 dark:bg-gray-950">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Unable to Load Event
+          </h1>
+
+          <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
+            We couldn't connect to the server. Please check your connection and
+            try again later.
+          </p>
+
+          <RetryButton />
+        </div>
+      </main>
+    );
   }
 
   // Handle authentication failure.
@@ -69,25 +87,53 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     notFound();
   }
 
+  // Handle other API errors.
   if (!res.ok) {
-    const errorMessage = await res.text();
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f7faf9] px-4 dark:bg-gray-950">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Something Went Wrong
+          </h1>
 
-    console.error("Event API error:", {
-      url: `${API_URL}/events/${id}`,
-      status: res.status,
-      message: errorMessage,
-    });
+          <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
+            We couldn't load this event right now. Please try again later.
+          </p>
 
-    throw new Error(`Failed to fetch event details: ${res.status}`);
+          <RetryButton />
+        </div>
+      </main>
+    );
   }
 
-  const event: IEvent | null = await res.json();
+  // Handle invalid JSON responses.
+  let event: IEvent | null = null;
+
+  try {
+    event = await res.json();
+  } catch {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f7faf9] px-4 dark:bg-gray-950">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Unable to Load Event
+          </h1>
+
+          <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
+            The server returned an invalid response. Please try again later.
+          </p>
+
+          <RetryButton />
+        </div>
+      </main>
+    );
+  }
 
   if (!event) {
     notFound();
   }
 
-  // Event Date
+  // Event Date.
   const eventDate = new Date(`${event.eventDate.slice(0, 10)}T00:00:00Z`);
 
   const formattedDate = eventDate.toLocaleDateString("en-US", {
@@ -98,7 +144,7 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     timeZone: "UTC",
   });
 
-  // Calculate Remaining Days
+  // Calculate Remaining Days.
   const today = new Date();
 
   const todayUTC = Date.UTC(

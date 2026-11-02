@@ -1,6 +1,8 @@
 "use client";
 
 import PastEventsFilter from "@/components/shared/PastEventsFilter";
+import RetryButton from "@/components/shared/RetryButton";
+import { Button } from "@/components/ui/button";
 import { IPastEvent } from "@/type/Type";
 import { Archive, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +15,7 @@ const API_URL = (
 const AllPastEvents = () => {
   const [pastEvents, setPastEvents] = useState<IPastEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchPastEvents = async () => {
@@ -29,15 +32,15 @@ const AllPastEvents = () => {
           cache: "no-store",
         });
 
-        const data = await res.json();
-
         if (!res.ok) {
-          throw new Error(data.message || `Request failed: ${res.status}`);
+          throw new Error(`Request failed: ${res.status}`);
         }
 
+        const data: IPastEvent[] = await res.json();
+
         setPastEvents(data);
-      } catch (error) {
-        console.error("Fetch past events error:", error);
+      } catch {
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -96,6 +99,22 @@ const AllPastEvents = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          ) : error ? (
+            <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-900">
+              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                <Archive size={30} />
+              </div>
+
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Unable to Load Past Events
+              </h3>
+
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500 dark:text-gray-400">
+                We couldn't load completed events right now. Please try again
+                later.
+              </p>
+              <RetryButton/>
             </div>
           ) : pastEvents.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-900">

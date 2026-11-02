@@ -1,7 +1,7 @@
 "use client";
 
 import { IEvent } from "@/type/Type";
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -38,6 +38,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { authClient } from "@/lib/auth-client";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
@@ -116,69 +117,77 @@ const EditMyEventDialog = ({ event, onUpdated }: EditMyEventDialogProps) => {
   };
 
   // Update event using PATCH.
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
 
-    if (!formData.eventType) {
-      toast.error("Please select an event type.");
-      return;
+  
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (!formData.eventType) {
+    toast.error("Please select an event type.");
+    return;
+  }
+
+  if (isInvalidDate) {
+    toast.error("Please select today or a future date.");
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    // Get JWT token from Better Auth
+    const { data: tokenData, error: tokenError } = await authClient.token();
+
+    if (tokenError || !tokenData?.token) {
+      throw new Error("Please log in to update your event.");
     }
 
-    if (isInvalidDate) {
-      toast.error("Please select today or a future date.");
-      return;
-    }
+    const token = tokenData?.token
 
-    setIsSubmitting(true);
+    const res = await fetch(`${API_URL}/events/${event._id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `BearerEdit ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const responseText = await res.text();
+
+    let data: { message?: string } = {};
 
     try {
-      const res = await fetch(`${API_URL}/events/${event._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const responseText = await res.text();
-
-      let data: { message?: string } = {};
-
-      try {
-        data = responseText ? JSON.parse(responseText) : {};
-      } catch {
-        console.error("Invalid server response:", responseText);
-
-        throw new Error(`Invalid server response. HTTP status: ${res.status}`);
-      }
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to update event.");
-      }
-
-      // Notify the parent page if a valid callback was provided.
-      const updatedEvent: IEvent = {
-        ...event,
-        ...formData,
-      };
-
-      if (typeof onUpdated === "function") {
-        onUpdated(updatedEvent);
-      }
-
-      toast.success(data.message || "Event updated successfully!");
-
-      setOpen(false);
-    } catch (error) {
-      console.error("Update event error:", error);
-
-      toast.error(
-        error instanceof Error ? error.message : "Unable to update event.",
-      );
-    } finally {
-      setIsSubmitting(false);
+      data = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      throw new Error(`Invalid server response. HTTP status: ${res.status}`);
     }
-  };
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to update event.");
+    }
+
+    const updatedEvent: IEvent = {
+      ...event,
+      ...formData,
+    };
+
+    if (typeof onUpdated === "function") {
+      onUpdated(updatedEvent);
+    }
+
+    toast.success(data.message || "Event updated successfully!");
+
+    setOpen(false);
+  } catch (error) {
+    toast.error(
+      error instanceof Error ? error.message : "Unable to update event.",
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -1,9 +1,17 @@
 "use client";
 
 import ManageMyEventCard from "@/components/shared/ManageMyEventCard";
+import RetryButton from "@/components/shared/RetryButton";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { IEvent } from "@/type/Type";
-import { ArrowRight, CalendarDays, History, Users } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  CalendarDays,
+  History,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -50,6 +58,7 @@ const ManageMyEvents = () => {
 
   const [events, setEvents] = useState<IEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Fetch events created by the logged-in user.
@@ -65,19 +74,19 @@ const ManageMyEvents = () => {
 
     const fetchMyEvents = async () => {
       setLoading(true);
+      setError(false);
 
       try {
-        const { data, error } = await authClient.token();
+        const { data, error: tokenError } = await authClient.token();
 
-        if (error || !data?.token) {
+        if (tokenError || !data?.token) {
           if (!cancelled) router.replace("/login");
           return;
         }
-        const token = data?.token;
 
         const res = await fetch(`${API_URL}/my-events`, {
           headers: {
-            Authorization: `BearerManage ${token}`,
+            Authorization: `BearerManage ${data.token}`,
           },
           cache: "no-store",
         });
@@ -101,11 +110,9 @@ const ManageMyEvents = () => {
         if (!cancelled) {
           setEvents(myEvents);
         }
-      } catch (error) {
-        console.error("Fetch my events error:", error);
-
+      } catch {
         if (!cancelled) {
-          toast.error("Unable to load your events.");
+          setError(true);
         }
       } finally {
         if (!cancelled) {
@@ -126,18 +133,17 @@ const ManageMyEvents = () => {
     setDeletingId(eventId);
 
     try {
-      const { data, error } = await authClient.token();
+      const { data, error: tokenError } = await authClient.token();
 
-      if (error || !data?.token) {
+      if (tokenError || !data?.token) {
         router.replace("/login");
         return;
       }
-      const token = data?.token;
 
       const res = await fetch(`${API_URL}/events/${eventId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `BearerDelete ${token}`,
+          Authorization: `BearerDelete ${data.token}`,
         },
       });
 
@@ -147,7 +153,14 @@ const ManageMyEvents = () => {
       }
 
       const responseText = await res.text();
-      const responseData = responseText ? JSON.parse(responseText) : {};
+
+      let responseData: { message?: string } = {};
+
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        throw new Error("Invalid server response.");
+      }
 
       if (!res.ok) {
         throw new Error(responseData.message || "Failed to delete event.");
@@ -157,10 +170,8 @@ const ManageMyEvents = () => {
         previousEvents.filter((event) => event._id !== eventId),
       );
 
-      toast.success("Event deleted successfully!");
+      toast.success(responseData.message || "Event deleted successfully!");
     } catch (error) {
-      console.error("Delete event error:", error);
-
       toast.error(
         error instanceof Error ? error.message : "Unable to delete event.",
       );
@@ -200,28 +211,6 @@ const ManageMyEvents = () => {
   );
 
   if (isPending) return null;
-
-  // if (!user) {
-  //   return (
-  //     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-  //       <Users size={48} className="mb-4 text-green-600" />
-
-  //       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-  //         Please Login
-  //       </h2>
-
-  //       <p className="mt-2 text-gray-500">
-  //         Log in to manage the events you have created.
-  //       </p>
-
-  //       <Link
-  //         href="/login"
-  //         className="mt-5 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700">
-  //         Login
-  //       </Link>
-  //     </div>
-  //   );
-  // }
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12 dark:bg-gray-950">
@@ -271,6 +260,21 @@ const ManageMyEvents = () => {
                 </div>
               </div>
             ))}
+          </div>
+        ) : error ? (
+          /* API Error State */
+          <div className="rounded-2xl border border-dashed border-red-200 bg-white px-6 py-16 text-center dark:border-red-900 dark:bg-gray-900">
+            <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
+
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Unable to Load Your Events
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-md text-gray-500 dark:text-gray-400">
+              We couldn't connect to the server or retrieve your events. Please
+              try again later.
+            </p>
+            <RetryButton />
           </div>
         ) : events.length === 0 ? (
           /* Empty State */

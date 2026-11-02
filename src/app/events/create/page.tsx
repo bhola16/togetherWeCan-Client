@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -65,16 +64,14 @@ const CreateEventPage = () => {
   // Get today's date in local timezone.
   const today = new Date();
 
-  const minDate = new Date(
-    today.getTime() - today.getTimezoneOffset() * 60000,
-  )
+  const minDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
     .toISOString()
     .split("T")[0];
 
   // Event date must be after today.
   const isInvalidDate = eventDate !== "" && eventDate <= minDate;
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (isSubmitting) return;
@@ -127,17 +124,18 @@ const CreateEventPage = () => {
         return;
       }
 
+      const token = data?.token;
       // Send event data with JWT authentication.
       const res = await fetch(`${API_URL}/create-events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `BearerCreate ${data.token}`,
+          Authorization: `BearerCreate ${token}`,
         },
         body: JSON.stringify(eventData),
       });
 
-      const result = await res.json().catch(() => ({}));
+      const result = await res.json().catch(() => null);
 
       if (res.status === 401 || res.status === 403) {
         toast.error("Your session has expired. Please log in again.");
@@ -146,7 +144,10 @@ const CreateEventPage = () => {
       }
 
       if (!res.ok) {
-        throw new Error(result.message || "Failed to create event.");
+        toast.error(
+          result?.message || "Failed to create event. Please try again.",
+        );
+        return;
       }
 
       toast.success("Event created successfully!");
@@ -156,13 +157,9 @@ const CreateEventPage = () => {
       setEventType("");
 
       router.push("/events");
-    } catch (error) {
-      console.error("Create event error:", error);
-
+    } catch {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again.",
+        "Unable to connect to the server. Please check your connection and try again.",
       );
     } finally {
       setIsSubmitting(false);

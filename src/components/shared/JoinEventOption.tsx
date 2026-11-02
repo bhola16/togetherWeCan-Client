@@ -40,7 +40,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
   const isCompleted = eventDate.getTime() < todayUTC;
 
   // Fetch the total number of volunteers.
-  // Fetch the total number of volunteers from MongoDB.
+  // This endpoint is public, so JWT is not required.
   useEffect(() => {
     let cancelled = false;
 
@@ -64,9 +64,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
         if (!cancelled) {
           setParticipantCount(data.count);
         }
-      } catch (error) {
-        console.error("Volunteer count error:", error);
-
+      } catch {
         if (!cancelled) {
           toast.error("Unable to load the volunteer count.");
         }
@@ -80,7 +78,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
     };
   }, [event._id]);
 
-  // Check whether the current user has already joined.
+  // Check whether the current authenticated user has already joined.
   useEffect(() => {
     if (isPending) return;
 
@@ -96,14 +94,24 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
       setCheckingParticipation(true);
 
       try {
+        const { data: tokenData, error: tokenError } = await authClient.token();
+
+        if (tokenError || !tokenData?.token) {
+          throw new Error("Authentication failed.");
+        }
+
         const params = new URLSearchParams({
-          userId: user.id,
           eventId: event._id,
         });
 
         const res = await fetch(
           `${API_URL}/eventParticipants/check?${params.toString()}`,
-          { cache: "no-store" },
+          {
+            headers: {
+              Authorization: `Bearer ${tokenData.token}`,
+            },
+            cache: "no-store",
+          },
         );
 
         if (!res.ok) {
@@ -115,9 +123,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
         if (!cancelled) {
           setJoined(data.joined);
         }
-      } catch (error) {
-        console.error("Check participation error:", error);
-
+      } catch {
         if (!cancelled) {
           toast.error("Unable to check your participation.");
         }
@@ -136,10 +142,15 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
   }, [user?.id, isPending, event._id]);
 
   // Refresh volunteer count from MongoDB.
+  // This endpoint is public, so JWT is not required.
   const refreshParticipantCount = async () => {
     try {
+      const params = new URLSearchParams({
+        eventId: event._id,
+      });
+
       const res = await fetch(
-        `${API_URL}/eventParticipants/count?eventId=${event._id}`,
+        `${API_URL}/eventParticipants/count?${params.toString()}`,
         { cache: "no-store" },
       );
 
@@ -148,8 +159,8 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
       const data: { count: number } = await res.json();
 
       setParticipantCount(data.count);
-    } catch (error) {
-      console.error("Refresh participant count error:", error);
+    } catch {
+      toast.error("Unable to refresh the volunteer count.");
     }
   };
 
@@ -172,16 +183,25 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
     setLoading(true);
 
     try {
+      // Get the authenticated user's JWT.
+      const { data: tokenData, error: tokenError } = await authClient.token();
+
+      if (tokenError || !tokenData?.token) {
+        toast.error("Authentication failed. Please log in again.");
+        router.push("/login");
+        return;
+      }
+
       if (joined) {
         // Unjoin event.
         const res = await fetch(`${API_URL}/eventParticipants`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData.token}`,
           },
           body: JSON.stringify({
             eventId: event._id,
-            userId: user.id,
           }),
         });
 
@@ -204,7 +224,6 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           eventId: event._id,
           eventTitle: event.title,
           eventDate: event.eventDate,
-          userId: user.id,
           userName: user.name,
           userEmail: user.email,
           userImage: user.image || "",
@@ -214,6 +233,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData.token}`,
           },
           body: JSON.stringify(participantData),
         });
@@ -237,9 +257,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
 
         toast.success("You have successfully joined this event!");
       }
-    } catch (error) {
-      console.error("Event participation error:", error);
-
+    } catch {
       toast.error("Unable to connect to the server. Please try again.");
     } finally {
       setLoading(false);
@@ -332,6 +350,6 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
       )}
     </aside>
   );
-};;
+};
 
 export default JoinEventOption;

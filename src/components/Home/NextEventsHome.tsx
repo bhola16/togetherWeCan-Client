@@ -13,6 +13,7 @@ const API_URL = (
 const NextEventsHome = () => {
   const [events, setEvents] = useState<IPastEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
@@ -46,8 +47,8 @@ const NextEventsHome = () => {
           .slice(0, 6);
 
         setEvents(upcoming);
-      } catch (error) {
-        console.error("Error fetching upcoming events:", error);
+      } catch {
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -59,6 +60,7 @@ const NextEventsHome = () => {
   return (
     <section className="bg-[#F8FAF7] px-6 py-16 dark:bg-gray-950 md:py-20">
       <div className="mx-auto max-w-7xl">
+        {/* Section Header */}
         <div className="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div className="max-w-2xl">
             <div className="mb-3 flex items-center gap-3">
@@ -85,15 +87,16 @@ const NextEventsHome = () => {
 
           <Link
             href="/events"
-            className="group inline-flex shrink-0 items-center gap-2 font-bold text-green-700 transition hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
-            View All Events
+            className="group inline-flex w-fit items-center gap-3 rounded-xl bg-emerald-700 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-700/20 transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-800 hover:shadow-xl hover:shadow-emerald-700/30 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-700">
+            Explore All Events
             <ArrowRight
               size={18}
-              className="transition-transform group-hover:translate-x-1"
+              className="transition-transform duration-300 group-hover:translate-x-1.5"
             />
           </Link>
         </div>
 
+        {/* Events Grid */}
         {loading ? (
           <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((item) => (
@@ -102,6 +105,19 @@ const NextEventsHome = () => {
                 className="h-72 animate-pulse rounded-3xl bg-gray-200 dark:bg-gray-800"
               />
             ))}
+          </div>
+        ) : error ? (
+          <div className="rounded-3xl border border-dashed border-gray-300 px-6 py-16 text-center dark:border-gray-700">
+            <CalendarDays size={36} className="mx-auto mb-4 text-gray-400" />
+
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              Unable to Load Events
+            </h3>
+
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              We couldn't load upcoming events right now. Please try again
+              later.
+            </p>
           </div>
         ) : events.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-gray-300 px-6 py-16 text-center dark:border-gray-700">

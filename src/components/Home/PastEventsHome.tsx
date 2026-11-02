@@ -13,6 +13,7 @@ const API_URL = (
 const PastEventsHome = () => {
   const [pastEvents, setPastEvents] = useState<IPastEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchPastEvents = async () => {
@@ -36,8 +37,8 @@ const PastEventsHome = () => {
         const data: IPastEvent[] = await res.json();
 
         setPastEvents(data);
-      } catch (error) {
-        console.error("Fetch past events error:", error);
+      } catch {
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -97,11 +98,25 @@ const PastEventsHome = () => {
                 </div>
               ))}
             </div>
+          ) : error ? (
+            <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-900">
+              <Archive size={36} className="mx-auto mb-4 text-gray-400" />
+
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Unable to Load Past Events
+              </h3>
+
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                We couldn't load completed events right now. Please try again
+                later.
+              </p>
+            </div>
           ) : pastEvents.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-900">
-              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                <Archive size={30} />
-              </div>
+              <Archive
+                size={30}
+                className="mx-auto mb-5 text-emerald-600 dark:text-emerald-400"
+              />
 
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 No Past Events Yet

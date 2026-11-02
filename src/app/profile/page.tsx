@@ -95,35 +95,35 @@ const ProfilePage = () => {
     );
   }
 
- if (!user) {
-   return (
-     <div className="flex min-h-[70vh] items-center justify-center bg-gray-50 px-4 dark:bg-gray-950">
-       <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
-         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-950">
-           <UserRound
-             size={32}
-             className="text-green-600 dark:text-green-400"
-           />
-         </div>
+  if (!user) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center bg-gray-50 px-4 dark:bg-gray-950">
+        <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-950">
+            <UserRound
+              size={32}
+              className="text-green-600 dark:text-green-400"
+            />
+          </div>
 
-         <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-           Login Required
-         </h2>
+          <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+            Login Required
+          </h2>
 
-         <p className="mb-7 text-sm leading-6 text-gray-500 dark:text-gray-400">
-           Please sign in to access your profile and manage your account
-           information.
-         </p>
+          <p className="mb-7 text-sm leading-6 text-gray-500 dark:text-gray-400">
+            Please sign in to access your profile and manage your account
+            information.
+          </p>
 
-         <Link href="/login" className="block">
-           <Button className="w-full rounded-lg bg-green-600 py-6 text-base font-semibold text-white transition-colors hover:bg-green-700">
-             Please Login First
-           </Button>
-         </Link>
-       </div>
-     </div>
-   );
- }
+          <Link href="/login" className="block">
+            <Button className="w-full rounded-lg bg-green-600 py-6 text-base font-semibold text-white transition-colors hover:bg-green-700">
+              Please Login First
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const profileDetails = [
     {

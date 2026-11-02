@@ -1,13 +1,22 @@
+
 "use client";
 
 import JoinedCard from "@/components/shared/JoinedCard";
+import RetryButton from "@/components/shared/RetryButton";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { JoinedEvent } from "@/type/Type";
-import { ArrowRight, CalendarDays, History, Users } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  CalendarDays,
+  History,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
 ).replace(/\/$/, "");
@@ -20,6 +29,8 @@ const JoinedPage = () => {
 
   const [joinedEvents, setJoinedEvents] = useState<JoinedEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     if (isPending) return;
@@ -33,12 +44,13 @@ const JoinedPage = () => {
 
     const fetchJoinedEvents = async () => {
       setLoading(true);
+      setError(false);
 
       try {
-        // Get JWT token
-        const { data, error } = await authClient.token();
+        // Get JWT token.
+        const { data, error: tokenError } = await authClient.token();
 
-        if (error || !data?.token) {
+        if (tokenError || !data?.token) {
           if (!cancelled) {
             router.replace("/login");
           }
@@ -49,12 +61,12 @@ const JoinedPage = () => {
 
         const res = await fetch(url, {
           headers: {
-            Authorization: `BearerJoined ${data.token}`,
+            Authorization: `Bearer ${data.token}`,
           },
           cache: "no-store",
         });
 
-        // Handle authentication failure
+        // Handle authentication failure.
         if (res.status === 401 || res.status === 403) {
           if (!cancelled) {
             router.replace("/login");
@@ -75,11 +87,9 @@ const JoinedPage = () => {
         if (!cancelled) {
           setJoinedEvents(availableEvents);
         }
-      } catch (error) {
-        console.error("Fetch joined events error:", error);
-
+      } catch {
         if (!cancelled) {
-          toast.error("Unable to load your joined events.");
+          setError(true);
         }
       } finally {
         if (!cancelled) {
@@ -93,7 +103,7 @@ const JoinedPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [user?.id, isPending, router]);
+  }, [user?.id, isPending, router, retry]);
 
   // Get the latest event date from the event document.
   const getEventDate = (joinedEvent: JoinedEvent) => {
@@ -171,7 +181,8 @@ const JoinedPage = () => {
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
-                className="animate-pulse overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-900">
+                className="animate-pulse overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-900"
+              >
                 <div className="h-56 bg-gray-200 dark:bg-gray-800" />
 
                 <div className="space-y-4 p-5">
@@ -181,6 +192,25 @@ const JoinedPage = () => {
                 </div>
               </div>
             ))}
+          </div>
+        ) : error ? (
+          /* API Error State */
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-900">
+            <AlertCircle
+              size={48}
+              className="mx-auto mb-4 text-gray-400"
+            />
+
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Unable to Load Joined Events
+            </h2>
+
+            <p className="mx-auto mt-2 max-w-md text-gray-500 dark:text-gray-400">
+              We couldn't connect to the server or retrieve your joined events.
+              Please try again later.
+            </p>
+
+            <RetryButton/>
           </div>
         ) : joinedEvents.length === 0 ? (
           /* Empty State */
@@ -198,7 +228,8 @@ const JoinedPage = () => {
 
             <Link
               href="/events"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700">
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700"
+            >
               Explore Events
               <ArrowRight size={18} />
             </Link>
@@ -249,7 +280,8 @@ const JoinedPage = () => {
 
                   <Link
                     href="/events"
-                    className="mt-3 inline-flex items-center gap-2 font-semibold text-green-600 hover:text-green-700">
+                    className="mt-3 inline-flex items-center gap-2 font-semibold text-green-600 hover:text-green-700"
+                  >
                     Explore Events
                     <ArrowRight size={16} />
                   </Link>
@@ -293,7 +325,10 @@ const JoinedPage = () => {
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-900">
-                  <History size={36} className="mx-auto mb-3 text-gray-400" />
+                  <History
+                    size={36}
+                    className="mx-auto mb-3 text-gray-400"
+                  />
 
                   <p className="font-medium text-gray-700 dark:text-gray-300">
                     No previous events yet.
