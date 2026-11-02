@@ -31,3 +31,6 @@ export interface IPastEvent {
   imageUrl: string;
   description: string;
 }
+
+
+

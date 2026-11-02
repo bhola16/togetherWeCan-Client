@@ -4,7 +4,7 @@ import { IPastEvent } from "@/type/Type";
 import { ArrowRight, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import HomeEventCard from "../HomeEventCard";
+import HomeEventCard from "../shared/HomeEventCard";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"

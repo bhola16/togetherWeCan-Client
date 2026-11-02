@@ -1,4 +1,3 @@
-import JoinEventOption from "@/components/JoinEventOption";
 import { IEvent } from "@/type/Type";
 import {
   CalendarDays,
@@ -8,6 +7,7 @@ import {
   Tag,
   Users,
 } from "lucide-react";
+import JoinEventOption from "../shared/JoinEventOption";
 
 interface EventDetailsContentProps {
   event: IEvent;

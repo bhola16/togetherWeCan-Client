@@ -4,7 +4,8 @@ import { IEvent, JoinedEvent } from "@/type/Type";
 import { ArrowUpRight, CalendarDays, CheckCircle2, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardFooter } from "./ui/card";
+import { Card, CardFooter } from "../ui/card";
+
 
 const formatDate = (date: string) => {
   if (!date) return "Date not available";

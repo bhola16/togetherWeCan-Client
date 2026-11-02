@@ -1,10 +1,11 @@
 "use client";
 
-import ManageMyEventCard from "@/components/ManageMyEventCard";
+import ManageMyEventCard from "@/components/shared/ManageMyEventCard";
 import { authClient } from "@/lib/auth-client";
 import { IEvent } from "@/type/Type";
 import { ArrowRight, CalendarDays, History, Users } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -42,6 +43,8 @@ const sortCompletedEvents = (events: IEvent[]) => {
 };
 
 const ManageMyEvents = () => {
+  const router = useRouter();
+
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
@@ -53,9 +56,8 @@ const ManageMyEvents = () => {
   useEffect(() => {
     if (isPending) return;
 
-    if (!user?.email) {
-      setEvents([]);
-      setLoading(false);
+    if (!user) {
+      router.replace("/login");
       return;
     }
 
@@ -65,18 +67,33 @@ const ManageMyEvents = () => {
       setLoading(true);
 
       try {
-        const res = await fetch(`${API_URL}/events`, {
+        const { data, error } = await authClient.token();
+
+        if (error || !data?.token) {
+          if (!cancelled) router.replace("/login");
+          return;
+        }
+        const token = data?.token;
+
+        const res = await fetch(`${API_URL}/my-events`, {
+          headers: {
+            Authorization: `BearerManage ${token}`,
+          },
           cache: "no-store",
         });
+
+        if (res.status === 401 || res.status === 403) {
+          if (!cancelled) router.replace("/login");
+          return;
+        }
 
         if (!res.ok) {
           throw new Error("Failed to fetch events.");
         }
 
-        const data: IEvent[] = await res.json();
+        const eventsData: IEvent[] = await res.json();
 
-        // Filter events created by the logged-in user.
-        const myEvents = data.filter(
+        const myEvents = eventsData.filter(
           (event) =>
             event.organizerEmail?.toLowerCase() === user.email?.toLowerCase(),
         );
@@ -102,21 +119,38 @@ const ManageMyEvents = () => {
     return () => {
       cancelled = true;
     };
-  }, [user?.email, isPending]);
+  }, [user?.id, user?.email, isPending, router]);
 
   // Delete event.
   const handleDeleteEvent = async (eventId: string) => {
     setDeletingId(eventId);
 
     try {
+      const { data, error } = await authClient.token();
+
+      if (error || !data?.token) {
+        router.replace("/login");
+        return;
+      }
+      const token = data?.token;
+
       const res = await fetch(`${API_URL}/events/${eventId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `BearerDelete ${token}`,
+        },
       });
 
-      const data: { message?: string } = await res.json();
+      if (res.status === 401 || res.status === 403) {
+        router.replace("/login");
+        return;
+      }
+
+      const responseText = await res.text();
+      const responseData = responseText ? JSON.parse(responseText) : {};
 
       if (!res.ok) {
-        throw new Error(data.message || "Failed to delete event.");
+        throw new Error(responseData.message || "Failed to delete event.");
       }
 
       setEvents((previousEvents) =>
@@ -167,27 +201,27 @@ const ManageMyEvents = () => {
 
   if (isPending) return null;
 
-  if (!user) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-        <Users size={48} className="mb-4 text-green-600" />
+  // if (!user) {
+  //   return (
+  //     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+  //       <Users size={48} className="mb-4 text-green-600" />
 
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Please Login
-        </h2>
+  //       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+  //         Please Login
+  //       </h2>
 
-        <p className="mt-2 text-gray-500">
-          Log in to manage the events you have created.
-        </p>
+  //       <p className="mt-2 text-gray-500">
+  //         Log in to manage the events you have created.
+  //       </p>
 
-        <Link
-          href="/login"
-          className="mt-5 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700">
-          Login
-        </Link>
-      </div>
-    );
-  }
+  //       <Link
+  //         href="/login"
+  //         className="mt-5 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700">
+  //         Login
+  //       </Link>
+  //     </div>
+  //   );
+  // }
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12 dark:bg-gray-950">

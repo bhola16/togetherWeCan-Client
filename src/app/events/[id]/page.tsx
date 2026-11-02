@@ -1,8 +1,11 @@
+
 import EventDetailsContent from "@/components/event-details/EventDetailsContent";
 import EventDetailsHero from "@/components/event-details/EventDetailsHero";
 import EventDetailsSidebar from "@/components/event-details/EventDetailsSidebar";
+import { auth } from "@/lib/auth";
 import { IEvent } from "@/type/Type";
-import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 
 interface EventDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -15,33 +18,68 @@ const API_URL = (
 const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
   const { id } = await params;
 
+  const requestHeaders = await headers();
+
+  // Check authentication.
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  // Get JWT token.
+  let token: string;
+
+  try {
+    const jwtToken = await auth.api.getToken({
+      headers: requestHeaders,
+    });
+
+    if (!jwtToken?.token) {
+      redirect("/login");
+    }
+
+    token = jwtToken.token;
+  } catch {
+    redirect("/login");
+  }
+
   let res: Response;
 
   try {
     res = await fetch(`${API_URL}/events/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       cache: "no-store",
     });
-  } catch (error) {
-    console.error("Event API connection error:", error);
+  } catch {
     throw new Error("Unable to connect to the event server.");
   }
 
-  // Handle missing or invalid event IDs
-if (res.status === 404 || res.status === 400) {
-  notFound ();
-}
+  // Handle authentication failure.
+  if (res.status === 401 || res.status === 403) {
+    redirect("/login");
+  }
 
-if (!res.ok) {
-  const errorMessage = await res.text();
+  // Handle missing or invalid event IDs.
+  if (res.status === 404 || res.status === 400) {
+    notFound();
+  }
 
-  console.error("Event API error:", {
-    url: `${API_URL}/events/${id}`,
-    status: res.status,
-    message: errorMessage,
-  });
+  if (!res.ok) {
+    const errorMessage = await res.text();
 
-  throw new Error(`Failed to fetch event details: ${res.status}`);
-}
+    console.error("Event API error:", {
+      url: `${API_URL}/events/${id}`,
+      status: res.status,
+      message: errorMessage,
+    });
+
+    throw new Error(`Failed to fetch event details: ${res.status}`);
+  }
 
   const event: IEvent | null = await res.json();
 

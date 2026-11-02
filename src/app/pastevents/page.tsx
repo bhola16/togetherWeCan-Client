@@ -1,6 +1,6 @@
 "use client";
 
-import PastEventsFilter from "@/components/PastEventsFilter";
+import PastEventsFilter from "@/components/shared/PastEventsFilter";
 import { IPastEvent } from "@/type/Type";
 import { Archive, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";

@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -13,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -34,9 +35,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { authClient } from "@/lib/auth-client";
 
 const API_URL = (
-  process.env.NEXT_PUBLIC_SERVER_API_URL || 'undefined'
+  process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
 ).replace(/\/$/, "");
 
 const types = [
@@ -54,6 +56,8 @@ const types = [
 const CreateEventPage = () => {
   const router = useRouter();
 
+  const { data: session, isPending } = authClient.useSession();
+
   const [eventDate, setEventDate] = useState("");
   const [eventType, setEventType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,17 +65,30 @@ const CreateEventPage = () => {
   // Get today's date in local timezone.
   const today = new Date();
 
-  const minDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+  const minDate = new Date(
+    today.getTime() - today.getTimezoneOffset() * 60000,
+  )
     .toISOString()
     .split("T")[0];
 
   // Event date must be after today.
   const isInvalidDate = eventDate !== "" && eventDate <= minDate;
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (isSubmitting) return;
+
+    if (isPending) {
+      toast.error("Please wait while authentication is loading.");
+      return;
+    }
+
+    if (!session?.user) {
+      toast.error("Please log in to create an event.");
+      router.push("/login");
+      return;
+    }
 
     if (!eventDate || isInvalidDate) {
       toast.error("Please select a valid future event date.");
@@ -93,21 +110,40 @@ const CreateEventPage = () => {
       location: formData.get("location"),
       imageUrl: formData.get("imageUrl"),
       description: formData.get("description"),
-      organizerEmail: formData.get("organizerEmail"),
+      organizerEmail: session.user.email,
     };
 
     try {
       setIsSubmitting(true);
 
+      // Get JWT token from Better Auth.
+      const { data, error } = await authClient.token();
+
+      if (error || !data?.token) {
+        toast.error(
+          error?.message || "Authentication failed. Please log in again.",
+        );
+        router.push("/login");
+        return;
+      }
+
+      // Send event data with JWT authentication.
       const res = await fetch(`${API_URL}/create-events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `BearerCreate ${data.token}`,
         },
         body: JSON.stringify(eventData),
       });
 
       const result = await res.json().catch(() => ({}));
+
+      if (res.status === 401 || res.status === 403) {
+        toast.error("Your session has expired. Please log in again.");
+        router.push("/login");
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(result.message || "Failed to create event.");
@@ -349,8 +385,9 @@ const CreateEventPage = () => {
                   id="organizerEmail"
                   name="organizerEmail"
                   type="email"
-                  placeholder="example@email.com"
+                  defaultValue={session?.user?.email || ""}
                   required
+                  placeholder="example@email.com"
                   className="h-11 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus-visible:ring-green-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
                 />
               </div>
@@ -360,7 +397,12 @@ const CreateEventPage = () => {
                 <Button
                   type="submit"
                   disabled={
-                    !eventDate || isInvalidDate || !eventType || isSubmitting
+                    isPending ||
+                    !session?.user ||
+                    !eventDate ||
+                    isInvalidDate ||
+                    !eventType ||
+                    isSubmitting
                   }
                   className="h-12 w-full bg-green-700 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50">
                   <Send size={17} className="mr-2" />

@@ -1,4 +1,4 @@
-import NextEventsFilter from "@/components/EventsFilter";
+import NextEventsFilter from "@/components/shared/EventsFilter";
 import { IEvent } from "@/type/Type";
 import { CalendarDays, Leaf, Plus } from "lucide-react";
 import Link from "next/link";
@@ -9,6 +9,9 @@ const API_URL = (
 
 const AllEventsPage = async () => {
   const res = await fetch(`${API_URL}/events`, {
+    headers: {
+      authorization: "User log in",
+    },
     cache: "no-store",
   });
 

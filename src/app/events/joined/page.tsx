@@ -1,18 +1,20 @@
 "use client";
 
-import JoinedCard from "@/components/JoinedCard";
+import JoinedCard from "@/components/shared/JoinedCard";
 import { authClient } from "@/lib/auth-client";
 import { JoinedEvent } from "@/type/Type";
 import { ArrowRight, CalendarDays, History, Users } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
 ).replace(/\/$/, "");
 
 const JoinedPage = () => {
+  const router = useRouter();
+
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
@@ -23,8 +25,7 @@ const JoinedPage = () => {
     if (isPending) return;
 
     if (!user) {
-      setJoinedEvents([]);
-      setLoading(false);
+      router.replace("/login");
       return;
     }
 
@@ -34,29 +35,40 @@ const JoinedPage = () => {
       setLoading(true);
 
       try {
+        // Get JWT token
+        const { data, error } = await authClient.token();
+
+        if (error || !data?.token) {
+          if (!cancelled) {
+            router.replace("/login");
+          }
+          return;
+        }
+
         const url = `${API_URL}/myjoinedevents/${user.id}`;
 
-        console.log("Fetching joined events from:", url);
-
         const res = await fetch(url, {
+          headers: {
+            Authorization: `BearerJoined ${data.token}`,
+          },
           cache: "no-store",
         });
 
-        const responseText = await res.text();
-
-        console.log("Response status:", res.status);
-        console.log("Response body:", responseText);
-
-        if (!res.ok) {
-          throw new Error(
-            `Failed to fetch joined events: ${res.status} - ${responseText}`,
-          );
+        // Handle authentication failure
+        if (res.status === 401 || res.status === 403) {
+          if (!cancelled) {
+            router.replace("/login");
+          }
+          return;
         }
 
-        const data: JoinedEvent[] = JSON.parse(responseText);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch joined events: ${res.status}`);
+        }
 
-        // Ignore participant records whose events have been deleted.
-        const availableEvents = data.filter((joinedEvent) =>
+        const result: JoinedEvent[] = await res.json();
+
+        const availableEvents = result.filter((joinedEvent) =>
           Boolean(joinedEvent.event),
         );
 
@@ -81,7 +93,7 @@ const JoinedPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [user?.id, isPending]);
+  }, [user?.id, isPending, router]);
 
   // Get the latest event date from the event document.
   const getEventDate = (joinedEvent: JoinedEvent) => {
@@ -101,7 +113,6 @@ const JoinedPage = () => {
   const upcomingEvents = joinedEvents
     .filter((joinedEvent) => {
       const eventDate = getEventDate(joinedEvent);
-
       return eventDate !== null && eventDate >= today;
     })
     .sort((a, b) => getEventDate(a)!.getTime() - getEventDate(b)!.getTime());
@@ -109,7 +120,6 @@ const JoinedPage = () => {
   const previousEvents = joinedEvents
     .filter((joinedEvent) => {
       const eventDate = getEventDate(joinedEvent);
-
       return eventDate === null || eventDate < today;
     })
     .sort((a, b) => {
@@ -119,28 +129,8 @@ const JoinedPage = () => {
       return dateB - dateA;
     });
 
-  if (isPending) {
+  if (isPending || !user) {
     return null;
-  }
-
-  if (!user) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-        <Users size={48} className="mb-4 text-green-600" />
-
-        <h2 className="text-2xl font-bold">Please Login</h2>
-
-        <p className="mt-2 text-gray-500">
-          Log in to see the events you have joined.
-        </p>
-
-        <Link
-          href="/login"
-          className="mt-5 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700">
-          Login
-        </Link>
-      </div>
-    );
   }
 
   return (
