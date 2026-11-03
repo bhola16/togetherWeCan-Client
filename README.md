@@ -4,7 +4,7 @@
 
 **TogetherWeCan** is a modern, responsive, community-driven social development and volunteering platform built with **Next.js, React, TypeScript, and Tailwind CSS**.
 
-The platform connects people through meaningful community events and social initiatives. Users can explore upcoming and past events, create and manage their own events, join activities organized by others, and keep track of their volunteering participation.
+The platform connects people through meaningful community events and social initiatives. Users can explore upcoming and past events, create and manage their own events, join activities organized by others, and track their volunteering participation.
 
 From tree plantation and community cleanup to blood donation, food distribution, and other social welfare activities, TogetherWeCan encourages people to make a difference through small actions.
 
@@ -16,8 +16,8 @@ From tree plantation and community cleanup to blood donation, food distribution,
 
 ## 📂 GitHub Repositories
 
-- **Client-side:** [TogetherWeCan Client Repository](https://github.com/bhola16/togetherWeCan-Client)
-- **Server-side:** [TogetherWeCan Server Repository](https://github.com/bhola16/togetherWeCan-Server)
+- **Client-side:** [TogetherWeCan Client](https://github.com/bhola16/togetherWeCan-Client)
+- **Server-side:** [TogetherWeCan Server](https://github.com/bhola16/togetherWeCan-Server)
 
 ---
 
@@ -51,7 +51,6 @@ Discover previously completed community activities.
 - Browse past events.
 - View event details and descriptions.
 - Explore completed social initiatives.
-- Navigate through the past events section.
 
 ### 4. ➕ Create Community Events
 
@@ -113,10 +112,6 @@ Event information includes:
 
 Dynamic routing allows individual events to be accessed using their unique IDs.
 
-Route:
-
-`src/app/events/[id]/page.tsx`
-
 ### 9. 🔐 User Authentication
 
 TogetherWeCan uses **Better Auth** for authentication and session management.
@@ -127,7 +122,7 @@ Supported authentication methods include:
 - Google sign-in.
 - GitHub sign-in.
 
-The application also uses JWT support for authenticated API requests.
+The application also uses JWT-based authorization for authenticated API requests.
 
 Google and GitHub authentication require valid OAuth credentials and correctly configured callback URLs.
 
@@ -142,11 +137,6 @@ New users can register and existing users can log in to access personalized plat
 - Session management.
 - Logout functionality.
 
-Page locations:
-
-- `src/app/register/page.tsx`
-- `src/app/login/page.tsx`
-
 ### 11. 👤 User Profile
 
 TogetherWeCan provides a dedicated profile page for authenticated users.
@@ -156,20 +146,11 @@ TogetherWeCan provides a dedicated profile page for authenticated users.
 - Display profile image when available.
 - Access account-related information.
 
-Route:
-
-`src/app/profile/page.tsx`
-
 ### 12. 🔎 Event Search and Filtering
 
 The platform includes event filtering functionality to help users discover relevant activities.
 
 Users can explore events using available filtering options and find community activities based on event information.
-
-Related components:
-
-- `EventsFilter.tsx`
-- `PastEventsFilter.tsx`
 
 ### 13. 📬 Newsletter Subscription
 
@@ -186,12 +167,11 @@ The subscription form communicates with the backend API.
 
 Reusable navigation components provide consistent navigation throughout the application.
 
-- `Navbar.tsx` — Main navigation bar.
-- `MobileNavbar.tsx` — Mobile navigation.
-- `Footer.tsx` — Footer section.
-- `ThemeToggle.tsx` — Theme switching control.
-
-Navigation links provide access to events, event management, joined events, profiles, and authentication pages.
+- Main navigation bar.
+- Mobile-friendly navigation.
+- Footer section.
+- Theme switching control.
+- Navigation to events, event management, joined events, profiles, and authentication pages.
 
 ### 15. 🌙 Dark and Light Mode
 
@@ -214,18 +194,12 @@ The application uses **Sonner** for toast notifications.
 
 ### 17. ⏳ Loading States and Error Handling
 
-The application includes loading interfaces and error-handling components.
+The application includes loading interfaces and error-handling functionality.
 
-- Global loading interface.
+- Loading interfaces.
 - Retry functionality for supported failed requests.
 - Friendly error messages.
 - Custom handling for unavailable pages and resources.
-
-Related files:
-
-- `src/app/loading.tsx`
-- `src/app/not-found.tsx`
-- `RetryButton.tsx`
 
 ### 18. 📱 Responsive Design
 
@@ -255,23 +229,23 @@ It includes:
 
 ## 🛠️ Technologies Used
 
-| Technology | Purpose |
-|---|---|
-| Next.js 16 | React framework and App Router |
-| React 19 | User interface development |
-| TypeScript | Type-safe application code |
-| Tailwind CSS 4 | Styling and responsive layouts |
-| shadcn/ui | Reusable UI components |
-| Better Auth | Authentication and session management |
-| MongoDB | Authentication data storage |
-| Express.js | Backend REST API |
-| Node.js | Backend runtime |
-| Sonner | Toast notifications |
-| Lucide React | Icons |
-| React Icons | Additional icons |
-| next-themes | Dark and light theme management |
-| date-fns | Date utilities |
-| Vercel | Client-side application deployment |
+| Technology     | Purpose                                  |
+| -------------- | ---------------------------------------- |
+| Next.js 16     | React framework and App Router           |
+| React 19       | User interface development               |
+| TypeScript     | Type-safe application code               |
+| Tailwind CSS 4 | Styling and responsive layouts           |
+| shadcn/ui      | Reusable UI components                   |
+| Better Auth    | Authentication and session management    |
+| MongoDB        | Database and authentication data storage |
+| Express.js     | Backend REST API                         |
+| Node.js        | Backend runtime                          |
+| Sonner         | Toast notifications                      |
+| Lucide React   | Icons                                    |
+| React Icons    | Additional icons                         |
+| next-themes    | Dark and light theme management          |
+| date-fns       | Date utilities                           |
+| Vercel         | Client-side application deployment       |
 
 ---
 
@@ -281,11 +255,15 @@ TogetherWeCan communicates with its Express.js backend through REST API endpoint
 
 **Local Backend API URL:**
 
-`http://localhost:8000`
+```text
+http://localhost:8000
+```
 
 The client application uses the following environment variable to configure the backend API URL:
 
-`NEXT_PUBLIC_SERVER_API_URL`
+```env
+NEXT_PUBLIC_SERVER_API_URL=http://localhost:8000
+```
 
 The backend handles event-related operations, including:
 
@@ -333,27 +311,20 @@ togetherWeCan-Client/
 │   │   ├── events/
 │   │   │   ├── [id]/
 │   │   │   │   └── page.tsx
-│   │   │   │
 │   │   │   ├── create/
 │   │   │   │   └── page.tsx
-│   │   │   │
 │   │   │   ├── joined/
 │   │   │   │   └── page.tsx
-│   │   │   │
 │   │   │   ├── manage/
 │   │   │   │   └── page.tsx
-│   │   │   │
 │   │   │   └── page.tsx
 │   │   │
 │   │   ├── login/
 │   │   │   └── page.tsx
-│   │   │
 │   │   ├── register/
 │   │   │   └── page.tsx
-│   │   │
 │   │   ├── profile/
 │   │   │   └── page.tsx
-│   │   │
 │   │   ├── pastevents/
 │   │   │   └── page.tsx
 │   │   │
@@ -364,7 +335,6 @@ togetherWeCan-Client/
 │   │   └── globals.css
 │   │
 │   ├── components/
-│   │   │
 │   │   ├── Home/
 │   │   │   ├── BannerSection.tsx
 │   │   │   ├── Footer.tsx
@@ -514,7 +484,9 @@ Clone and configure the server-side project by following its instructions:
 
 Make sure the backend API is available at:
 
-`http://localhost:8000`
+```text
+http://localhost:8000
+```
 
 ### 7. Start the Client Development Server
 
@@ -528,7 +500,9 @@ npm run dev
 
 Visit the following address in your browser:
 
-[http://localhost:3000](http://localhost:3000)
+```text
+http://localhost:3000
+```
 
 The TogetherWeCan client application should now be available locally.
 
@@ -536,12 +510,12 @@ The TogetherWeCan client application should now be available locally.
 
 ## 📦 Available Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Starts the Next.js development server |
+| Command         | Description                           |
+| --------------- | ------------------------------------- |
+| `npm run dev`   | Starts the Next.js development server |
 | `npm run build` | Creates an optimized production build |
-| `npm run start` | Starts the production server |
-| `npm run lint` | Runs ESLint checks |
+| `npm run start` | Starts the production server          |
+| `npm run lint`  | Runs ESLint checks                    |
 
 ---
 
@@ -557,21 +531,7 @@ TogetherWeCan uses **Better Auth** for authentication and session management.
 
 ### Authentication Configuration
 
-The authentication setup is divided into two modules:
-
-```text
-src/lib/auth.ts
-src/lib/auth-client.ts
-```
-
-- `auth.ts` — Server-side authentication configuration.
-- `auth-client.ts` — Client-side authentication integration.
-
-The authentication API route is located at:
-
-```text
-src/app/api/auth/[...all]/route.ts
-```
+The authentication setup includes server-side and client-side authentication integration.
 
 MongoDB is used for authentication data storage through the Better Auth MongoDB adapter.
 
@@ -619,39 +579,9 @@ Community participation and social impact
 
 ---
 
-## 🔔 User Interface Feedback
-
-TogetherWeCan uses **Sonner** for toast notifications.
-
-### Toast Notifications
-
-The application provides feedback for important user actions, including:
-
-- Successful operations.
-- Form validation.
-- Authentication feedback.
-- Event-related actions.
-- API errors.
-- Newsletter subscription responses.
-
-### Loading States
-
-Loading interfaces help users understand when information is being retrieved or prepared.
-
-The application includes loading UI for the main application experience.
-
----
-
 ## 🌙 Theme Management
 
 TogetherWeCan supports light and dark themes using `next-themes`.
-
-Theme-related components:
-
-```text
-src/components/Home/ThemeProvider.tsx
-src/components/Home/ThemeToggle.tsx
-```
 
 The theme provider manages the application theme, while the theme toggle allows users to switch between light and dark appearance.
 
@@ -661,7 +591,7 @@ The theme provider manages the application theme, while the theme toggle allows 
 
 The client-side application is deployed on **Vercel**.
 
-**Live Website:** [https://togetherwecan-client.vercel.app/](https://togetherwecan-client.vercel.app/)
+**Live Website:** [TogetherWeCan](https://togetherwecan-client.vercel.app/)
 
 To deploy your own instance:
 
@@ -748,14 +678,14 @@ npm run build
 - **Server Repository:** [TogetherWeCan Server](https://github.com/bhola16/togetherWeCan-Server)
 - **Live Website:** [TogetherWeCan](https://togetherwecan-client.vercel.app/)
 
-Electronics & Communication Engineering Graduate  
+Electronics & Communication Engineering Graduate
 Khulna University, Bangladesh
 
 ---
 
 ## 📄 License
 
-This project was developed as part of a web development assignment for educational purposes.
+This project was created for educational purposes as part of the Programming Hero Web Development course.
 
 ---
 
