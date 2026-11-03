@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { Josefin_Sans } from "next/font/google";
 
 import Footer from "@/components/Home/Footer";
+import ThemeProvider from "@/components/Home/ThemeProvider";
 import { Toaster } from "sonner";
 import "./globals.css";
-import ThemeProvider from "@/components/Home/ThemeProvider";
 
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],

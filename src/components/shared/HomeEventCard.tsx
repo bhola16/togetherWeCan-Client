@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { IPastEvent } from "@/type/Type";
 import { ArrowRight, CalendarDays, CheckCircle2, Clock } from "lucide-react";
@@ -36,8 +35,7 @@ const HomeEventCard = ({ event, status }: HomeEventCardProps) => {
       <Link
         href={`/events/${event._id}`}
         aria-label={`View ${event.title}`}
-        className="relative block h-72 shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-800"
-      >
+        className="relative block h-72 shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-800">
         <Image
           src={imageSrc}
           alt={event.title || "Community event"}

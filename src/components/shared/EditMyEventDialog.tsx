@@ -56,26 +56,28 @@ const types = [
   "Other",
 ];
 
+const getTomorrowDate = () => {
+  const tomorrow = new Date();
+
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const year = tomorrow.getFullYear();
+  const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+  const day = String(tomorrow.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 interface EditMyEventDialogProps {
   event: IEvent;
   onUpdated: (updatedEvent: IEvent) => void;
 }
 
-const getTodayDate = () => {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
 const EditMyEventDialog = ({ event, onUpdated }: EditMyEventDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const minDate = getTodayDate();
+  const minDate = getTomorrowDate();
 
   const [formData, setFormData] = useState({
     title: event.title || "",
@@ -117,76 +119,74 @@ const EditMyEventDialog = ({ event, onUpdated }: EditMyEventDialogProps) => {
   };
 
   // Update event using PATCH.
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  
-const handleSubmit = async (e: React.SubmitEvent <HTMLFormElement>) => {
-  e.preventDefault();
-
-  if (!formData.eventType) {
-    toast.error("Please select an event type.");
-    return;
-  }
-
-  if (isInvalidDate) {
-    toast.error("Please select today or a future date.");
-    return;
-  }
-
-  setIsSubmitting(true);
-
-  try {
-    // Get JWT token from Better Auth
-      const { token, error } = await getTokenFromClient();
-
-    if (error || !token) {
-      throw new Error("Please log in to update your event.");
+    if (!formData.eventType) {
+      toast.error("Please select an event type.");
+      return;
     }
 
+    if (isInvalidDate) {
+      toast.error(
+        "Please select a future date. Past dates and today are not allowed.",
+      );
+      return;
+    }
 
-    const res = await fetch(`${API_URL}/events/${event._id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `BearerEdit ${token}`,
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const responseText = await res.text();
-
-    let data: { message?: string } = {};
+    setIsSubmitting(true);
 
     try {
-      data = responseText ? JSON.parse(responseText) : {};
-    } catch {
-      throw new Error(`Invalid server response. HTTP status: ${res.status}`);
+      // Get JWT token from Better Auth
+      const { token, error } = await getTokenFromClient();
+
+      if (error || !token) {
+        throw new Error("Please log in to update your event.");
+      }
+
+      const res = await fetch(`${API_URL}/events/${event._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const responseText = await res.text();
+
+      let data: { message?: string } = {};
+
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        throw new Error(`Invalid server response. HTTP status: ${res.status}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update event.");
+      }
+
+      const updatedEvent: IEvent = {
+        ...event,
+        ...formData,
+      };
+
+      if (typeof onUpdated === "function") {
+        onUpdated(updatedEvent);
+      }
+
+      toast.success(data.message || "Event updated successfully!");
+
+      setOpen(false);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to update event.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to update event.");
-    }
-
-    const updatedEvent: IEvent = {
-      ...event,
-      ...formData,
-    };
-
-    if (typeof onUpdated === "function") {
-      onUpdated(updatedEvent);
-    }
-
-    toast.success(data.message || "Event updated successfully!");
-
-    setOpen(false);
-  } catch (error) {
-    toast.error(
-      error instanceof Error ? error.message : "Unable to update event.",
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -282,11 +282,11 @@ const handleSubmit = async (e: React.SubmitEvent <HTMLFormElement>) => {
               {isInvalidDate ? (
                 <p className="flex items-center gap-1.5 text-xs text-red-600">
                   <AlertCircle size={14} />
-                  Please select today or a future date.
+                  Please select a date starting tomorrow.
                 </p>
               ) : (
                 <p className="text-xs text-gray-400">
-                  Select today or a future date.
+                  Events must be scheduled at least one day in advance.
                 </p>
               )}
             </div>

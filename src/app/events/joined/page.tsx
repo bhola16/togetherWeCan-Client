@@ -1,9 +1,7 @@
-
 "use client";
 
 import JoinedCard from "@/components/shared/JoinedCard";
 import RetryButton from "@/components/shared/RetryButton";
-import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenClient";
 import { JoinedEvent } from "@/type/Type";
@@ -17,6 +15,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
@@ -49,7 +48,7 @@ const JoinedPage = () => {
 
       try {
         // Get JWT token.
-      const { token, error } = await getTokenFromClient();
+        const { token, error } = await getTokenFromClient();
 
         if (error || !token) {
           if (!cancelled) {
@@ -62,7 +61,7 @@ const JoinedPage = () => {
 
         const res = await fetch(url, {
           headers: {
-            Authorization: `BearerJoined ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           cache: "no-store",
         });
@@ -91,6 +90,9 @@ const JoinedPage = () => {
       } catch {
         if (!cancelled) {
           setError(true);
+          toast.error(
+            "Unable to connect to the server. Please try again later.",
+          );
         }
       } finally {
         if (!cancelled) {
@@ -182,8 +184,7 @@ const JoinedPage = () => {
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
-                className="animate-pulse overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-900"
-              >
+                className="animate-pulse overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-900">
                 <div className="h-56 bg-gray-200 dark:bg-gray-800" />
 
                 <div className="space-y-4 p-5">
@@ -197,10 +198,7 @@ const JoinedPage = () => {
         ) : error ? (
           /* API Error State */
           <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-gray-700 dark:bg-gray-900">
-            <AlertCircle
-              size={48}
-              className="mx-auto mb-4 text-gray-400"
-            />
+            <AlertCircle size={48} className="mx-auto mb-4 text-gray-400" />
 
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Unable to Load Joined Events
@@ -211,7 +209,7 @@ const JoinedPage = () => {
               Please try again later.
             </p>
 
-            <RetryButton/>
+            <RetryButton />
           </div>
         ) : joinedEvents.length === 0 ? (
           /* Empty State */
@@ -229,8 +227,7 @@ const JoinedPage = () => {
 
             <Link
               href="/events"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700"
-            >
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700">
               Explore Events
               <ArrowRight size={18} />
             </Link>
@@ -281,8 +278,7 @@ const JoinedPage = () => {
 
                   <Link
                     href="/events"
-                    className="mt-3 inline-flex items-center gap-2 font-semibold text-green-600 hover:text-green-700"
-                  >
+                    className="mt-3 inline-flex items-center gap-2 font-semibold text-green-600 hover:text-green-700">
                     Explore Events
                     <ArrowRight size={16} />
                   </Link>
@@ -326,10 +322,7 @@ const JoinedPage = () => {
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-900">
-                  <History
-                    size={36}
-                    className="mx-auto mb-3 text-gray-400"
-                  />
+                  <History size={36} className="mx-auto mb-3 text-gray-400" />
 
                   <p className="font-medium text-gray-700 dark:text-gray-300">
                     No previous events yet.

@@ -219,11 +219,7 @@ const Login = () => {
                     Password
                   </label>
 
-                  <Link
-                    href="/forgot-password"
-                    className="text-xs font-semibold text-teal-700 transition hover:text-teal-900 hover:underline dark:text-teal-400 dark:hover:text-teal-300">
-                    Forgot password?
-                  </Link>
+                 
                 </div>
 
                 <div className="relative">
@@ -293,7 +289,9 @@ const Login = () => {
                   className="shrink-0 object-contain"
                 />
                 <span>
-                  {socialLoading === "google" ? "Connecting..." : "Login with Google"}
+                  {socialLoading === "google"
+                    ? "Connecting..."
+                    : "Login with Google"}
                 </span>
               </Button>
 
@@ -310,7 +308,9 @@ const Login = () => {
                   className="shrink-0 object-contain dark:invert"
                 />
                 <span>
-                  {socialLoading === "github" ? "Connecting..." : "Login with GitHub"}
+                  {socialLoading === "github"
+                    ? "Connecting..."
+                    : "Login with GitHub"}
                 </span>
               </Button>
             </div>

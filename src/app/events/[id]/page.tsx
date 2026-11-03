@@ -1,4 +1,3 @@
-
 import EventDetailsContent from "@/components/event-details/EventDetailsContent";
 import EventDetailsHero from "@/components/event-details/EventDetailsHero";
 import EventDetailsSidebar from "@/components/event-details/EventDetailsSidebar";
@@ -20,12 +19,11 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
   let res: Response;
 
   try {
-    // Fetch public event details without authentication.
+    // Public endpoint: no authentication or JWT required.
     res = await fetch(`${API_URL}/events/${id}`, {
       cache: "no-store",
     });
   } catch {
-    // Handle server connection failure.
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f7faf9] px-4 dark:bg-gray-950">
         <div className="max-w-md text-center">
@@ -44,12 +42,10 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     );
   }
 
-  // Handle missing or invalid event IDs.
   if (res.status === 404 || res.status === 400) {
     notFound();
   }
 
-  // Handle other API errors.
   if (!res.ok) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f7faf9] px-4 dark:bg-gray-950">
@@ -68,7 +64,6 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     );
   }
 
-  // Handle invalid JSON responses.
   let event: IEvent | null = null;
 
   try {
@@ -95,7 +90,7 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     notFound();
   }
 
-  // Event Date.
+  // Event date.
   const eventDate = new Date(`${event.eventDate.slice(0, 10)}T00:00:00Z`);
 
   const formattedDate = eventDate.toLocaleDateString("en-US", {
@@ -106,7 +101,7 @@ const EventDetailsPage = async ({ params }: EventDetailsPageProps) => {
     timeZone: "UTC",
   });
 
-  // Calculate Remaining Days.
+  // Calculate remaining days.
   const today = new Date();
 
   const todayUTC = Date.UTC(

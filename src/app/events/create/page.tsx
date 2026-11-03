@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import {
   AlertCircle,
   CalendarDays,
@@ -7,16 +9,17 @@ import {
   Image as ImageIcon,
   Mail,
   MapPin,
+  RefreshCw,
   Send,
   Tag,
   Type,
 } from "lucide-react";
-
 import { useRouter } from "next/navigation";
-import React, { useState, type FormEvent } from "react";
-import { toast } from "sonner";
 
+import { useEffect, useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -36,7 +39,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenClient";
-
 const API_URL = (
   process.env.NEXT_PUBLIC_SERVER_API_URL || "http://localhost:8000"
 ).replace(/\/$/, "");
@@ -62,6 +64,96 @@ const CreateEventPage = () => {
   const [eventType, setEventType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // JWT authentication states.
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  // API error and retry states.
+  const [hasApiError, setHasApiError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Validate JWT before allowing access to this page.
+  useEffect(() => {
+    if (isPending) return;
+
+    if (!session?.user) {
+      router.replace("/login");
+      return;
+    }
+
+    let isMounted = true;
+
+    const validateJWT = async () => {
+      try {
+        setHasApiError(false);
+
+        const { token, error } = await getTokenFromClient();
+
+        if (error || !token) {
+          if (isMounted) {
+            toast.error("Authentication failed. Please log in again.");
+            router.replace("/login");
+          }
+          return;
+        }
+
+        // Verify JWT through a protected backend endpoint.
+        const response = await fetch(`${API_URL}/my-events`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          if (isMounted) {
+            toast.error("Your session has expired. Please log in again.");
+            router.replace("/login");
+          }
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+
+        if (isMounted) {
+          setIsAuthorized(true);
+          setHasApiError(false);
+        }
+      } catch (error) {
+        console.log("JWT validation error:", error);
+
+        if (isMounted) {
+          setIsAuthorized(false);
+          setHasApiError(true);
+
+          toast.error(
+            "Unable to connect to the server. Please try again later.",
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
+      }
+    };
+
+    void validateJWT();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, isPending, session?.user, retryCount]);
+
+  // Retry API validation.
+  const handleRetry = () => {
+    setIsCheckingAuth(true);
+    setHasApiError(false);
+    setRetryCount((prev) => prev + 1);
+  };
+
   // Get today's date in local timezone.
   const today = new Date();
 
@@ -82,7 +174,7 @@ const CreateEventPage = () => {
       return;
     }
 
-    if (!session?.user) {
+    if (!isAuthorized || !session?.user) {
       toast.error("Please log in to create an event.");
       router.push("/login");
       return;
@@ -125,13 +217,12 @@ const CreateEventPage = () => {
         return;
       }
 
-      
       // Send event data with JWT authentication.
       const res = await fetch(`${API_URL}/create-events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `BearerCreate ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(eventData),
       });
@@ -158,7 +249,9 @@ const CreateEventPage = () => {
       setEventType("");
 
       router.push("/events");
-    } catch {
+    } catch (error) {
+      console.log("Create event error:", error);
+
       toast.error(
         "Unable to connect to the server. Please check your connection and try again.",
       );
@@ -166,6 +259,47 @@ const CreateEventPage = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Show loading while authentication is being checked.
+  if (isCheckingAuth || isPending) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-gray-500">Verifying authentication...</p>
+      </div>
+    );
+  }
+
+  // Show an inline error if the backend is unavailable.
+  if (hasApiError) {
+    return (
+      <section className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-950">
+        <div className="w-full max-w-2xl rounded-2xl border border-dashed border-red-200 bg-white px-6 py-16 text-center dark:border-red-900 dark:bg-gray-900">
+          <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
+
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Unable to Load Create Event Page
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-md text-gray-500 dark:text-gray-400">
+            We couldn't connect to the server or verify your access. Please try
+            again later.
+          </p>
+
+          <Button
+            onClick={handleRetry}
+            className="mt-6 bg-green-700 text-white hover:bg-green-800">
+            <RefreshCw size={16} className="mr-2" />
+            Try Again
+          </Button>
+        </div>
+      </section>
+    );
+  }
+
+  // Prevent unauthorized users from accessing the page.
+  if (!isAuthorized || !session?.user) {
+    return null;
+  }
 
   return (
     <section className="min-h-screen bg-gray-50 px-4 py-12 transition-colors duration-300 dark:bg-gray-950 sm:px-6 lg:px-8">

@@ -41,7 +41,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
   const isCompleted = eventDate.getTime() < todayUTC;
 
   // Fetch the total number of volunteers.
-  // This endpoint is public, so JWT is not required.
+  // Public endpoint: JWT is not required.
   useEffect(() => {
     let cancelled = false;
 
@@ -80,9 +80,11 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
   }, [event._id]);
 
   // Check whether the current authenticated user has already joined.
+  // This request requires a valid JWT.
   useEffect(() => {
     if (isPending) return;
 
+    // Logged-out users can still view the event and volunteer count.
     if (!user) {
       setJoined(false);
       setCheckingParticipation(false);
@@ -95,9 +97,9 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
       setCheckingParticipation(true);
 
       try {
-        const {token, error} = await getTokenFromClient();
+        const { token, error } = await getTokenFromClient();
 
-        if (error ||!token) {
+        if (error || !token) {
           throw new Error("Authentication failed.");
         }
 
@@ -125,6 +127,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
           setJoined(data.joined);
         }
       } catch {
+        // Do not redirect or block public event details if this check fails.
         if (!cancelled) {
           toast.error("Unable to check your participation.");
         }
@@ -143,7 +146,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
   }, [user?.id, isPending, event._id]);
 
   // Refresh volunteer count from MongoDB.
-  // This endpoint is public, so JWT is not required.
+  // Public endpoint: JWT is not required.
   const refreshParticipantCount = async () => {
     try {
       const params = new URLSearchParams({
@@ -165,12 +168,12 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
     }
   };
 
-  // Join or unjoin event.
+  // Join or leave an event.
   const handleParticipation = async () => {
-    // Check login before allowing participation.
+    // Authentication is required only when the user tries to participate.
     if (!user) {
       toast.error("You must be logged in to join this event.");
-      // router.push("/login");
+      router.push("/login");
       return;
     }
 
@@ -187,7 +190,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
 
     try {
       // Get the authenticated user's JWT.
-        const { token, error } = await getTokenFromClient();
+      const { token, error } = await getTokenFromClient();
 
       if (error || !token) {
         toast.error("Authentication failed. Please log in again.");
@@ -196,7 +199,7 @@ const JoinEventOption = ({ event }: JoinEventCardProps) => {
       }
 
       if (joined) {
-        // Unjoin event.
+        // Leave event.
         const res = await fetch(`${API_URL}/eventParticipants`, {
           method: "DELETE",
           headers: {

@@ -173,7 +173,7 @@ const ManageMyEventCard = ({
             nativeButton={false}
             render={<Link href={`/events/${event._id}`} />}
             variant="outline"
-            className="h-10 w-full min-w-0 gap-1 rounded-lg border-green-200 bg-green-50/50 px-2 text-xs font-semibold text-green-700 transition-all hover:border-green-300 hover:bg-green-100 hover:text-green-800 dark:border-green-900 dark:bg-green-950/30 dark:text-green-400 dark:hover:bg-green-950 sm:text-sm">
+            className="h-10 w-full min-w-0 gap-1 rounded-lg border-green-200 bg-green-50/50 px-2 text-xs font-semibold text-green-700 transition-all hover:border-green-300 hover:bg-green-100 hover:text-green-800 dark:border-green-900 dark:bg-green-950/30 dark:text-green-400 dark:hover:bg-green-950 md:text-sm">
             View Details
           </Button>
 

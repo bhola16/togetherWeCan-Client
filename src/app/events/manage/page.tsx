@@ -87,7 +87,7 @@ const ManageMyEvents = () => {
 
         const res = await fetch(`${API_URL}/my-events`, {
           headers: {
-            Authorization: `BearerManage ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           cache: "no-store",
         });
@@ -114,6 +114,9 @@ const ManageMyEvents = () => {
       } catch {
         if (!cancelled) {
           setError(true);
+          toast.error(
+            "Unable to connect to the server. Please try again later.",
+          );
         }
       } finally {
         if (!cancelled) {
@@ -144,7 +147,7 @@ const ManageMyEvents = () => {
       const res = await fetch(`${API_URL}/events/${eventId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `BearerDelete ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 

@@ -1,6 +1,5 @@
 import NextEventsFilter from "@/components/shared/EventsFilter";
 import RetryButton from "@/components/shared/RetryButton";
-import { Button } from "@/components/ui/button";
 import { IEvent } from "@/type/Type";
 import { CalendarDays, Leaf, Plus } from "lucide-react";
 import Link from "next/link";
